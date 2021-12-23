@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %} | Library</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="x-ua-compatible">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light my-navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{{ url_for('main.index') }}">Strona główna</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path != url_for('main.books') %} active {% endif %}" href="{{ url_for('main.books') }}">Książki</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path != url_for('main.authors') %} active {% endif %}" href="{{ url_for('main.authors') }}">Autorzy</a>
+                    </li>
+                    {% if current_user.is_auth %}
+                        {% if current_user.status == client %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path != '/client_book/' %} active {% endif %}" href="/client_book/">Wypożyczenia</a>
+                        </li>
+                        {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path != '/clients/' %} active {% endif %}" href="/clients/">Klienci</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle active" href="#" id="navbarDropdown" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Dodaj</a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item" href="/add_loan/">Wypożyczenie</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="/add_book/">Nowa książka</a>
+                                    <a class="dropdown-item" href="/add_author/">Nowy autor</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="/categories/">Kategorie</a>
+                                </div>
+                            </li>
+                        </li>
+                        {% endif %}
+                    {% endif %}
+                </ul>
+                <div class="col d-flex justify-content-end navbar-nav">
+                    {% if current_user.is_auth %}
+                    <a class="nav-link {% if request.path != '/profile/' %} active {% endif %}" href="{{ url_for('main.profil') }}">{{ current_user }}</a>
+                    <a class="nav-link active" href="{{ url_for('auth.logout') }}">Wyloguj</a>
+                    {% else %}
+                    <a class="nav-link active" href="{{ url_for('auth.login') }}">Zaloguj</a>
+                    <a class="nav-link active" href="{{ url_for('auth.signup') }}">Rejestracja</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+<!-- //--------------------------- page content -------------------------// -->
+    {% block content %}{% endblock content %}
+<!-- //--------------------------- page content end ---------------------// -->
+    <footer class="text-center text-white fixed-bottom my-footer">
+        <div class="text-center p-3">© 2021 Copyright: Mariusz Kuleta</div>
+    </footer>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+</body>
+</html>

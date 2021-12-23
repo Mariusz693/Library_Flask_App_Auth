@@ -1,0 +1,94 @@
+
+body {
+    background: #dbe3de;
+    background: -webkit-linear-gradient(to left, #ffffff, #dbe3de);
+    background: linear-gradient(to left, #ffffff, #dbe3de);
+}
+
+nav.my-navbar {
+    background-color: #dbe3de;
+    border-bottom-style: solid;
+    border-bottom-width: 5px;
+    border-bottom-color: black;
+}
+
+footer.my-footer {
+    background-color: black;
+}
+
+div.my-container {
+    margin-top: 10px;
+    margin-bottom: 75px;
+}
+
+tr.my-table {
+    margin-top: 10px;
+}
+
+img.my-style {
+    margin-top: 50px;
+    margin-bottom: 100px;
+}
+
+div.my-header {
+    margin-bottom: 20px;
+    margin-right: 2.5px;
+    margin-left: 2.5px;
+}
+
+div.my-row{
+    margin-bottom: 20px;
+}
+
+li.my-list {
+    margin-left: 15px;
+    margin-bottom: 10px;
+}
+
+button.my-button-cross {
+    color: darkred;
+    width: 70px;
+    border-radius: 5px;
+}
+
+button.my-button-add {
+    background-color: darkgreen;
+    color: white;
+    width: 70px;
+    border-radius: 5px;
+    border-color: darkgreen;
+}
+ 
+div.my-checkbox {
+    margin-bottom: 5px;
+}
+
+a.my-button {
+    margin-left: 20px;
+    align-self: center;
+}
+
+button.my-button {
+    margin-left: 20px;
+    align-self: center;
+}
+
+a.my-link {
+    text-decoration: none;
+}
+
+div.my-error {
+    color: darkred;
+}
+
+div.my-bold-text {
+    font-weight: bold;
+}
+
+input[type=checkbox] {
+    transform: scale(1.25);
+}
+
+input.my-search-input {
+    max-width: 300px;
+}
