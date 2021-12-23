@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %} Książki {% endblock %}
+{% block content %}
+    <div class="container my-container">
+        <div class="mt-4 ml-4 mr-4">
+            <form action="{{ url_for('main.books') }}" method="GET">
+                <div class="row border-bottom border-3 my-header">
+                    <div class="col-sm-6 mb-2">
+                        {% if request.args.search %}
+                        <h4 class="color-header">Wyniki wyszukiwania dla "{{ request.args.search }}"</h4>
+                        {% else %}
+                        <h4 class="color-header">Wszystkie pozycje w bazie</h4>
+                        {% endif %}
+                    </div>
+                    <div class="col-sm-6 d-flex justify-content-end mb-2">
+                        <input type="text" class="form-control my-search-input" name="search" {% if request.args.search %} value="{{ request.args.search }}" {% endif %} placeholder="Wyszukaj">
+                        <button type="submit" class="btn btn-success my-button">Szukaj</button>
+                        {% if current_user.is_auth and current_user.status == client %}
+                        <a href="/add_book/" class="btn btn-info my-button">Dodaj</a>
+                        {% endif %}
+                        {% if request.args.search %} 
+                        <a href="{{ url_for('main.books') }}" class="btn btn-info my-button">Wszystkie</a>
+                        {% endif %}      
+                    </div>
+                </div>
+            </form>
+            <table class="table">
+                <thead>
+                    <tr class="d-flex flex-wrap">
+                        <th class="col-sm-1">Lp.</th>
+                        <th class="col-sm-3">Tytuł</th>
+                        <th class="col-sm-2">ISBN</th>
+                        <th class="col-sm-3">Autor</th>
+                        <th class="col-sm-1 text-center">Ilość</th>
+                        <th class="col-sm-1 text-center">Zajęte</th>
+                        <th class="col-sm-1 text-center">#</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for book in books_list %}
+                    <tr class="d-flex flex-wrap my-table">
+                        <td class="col-sm-1">{{ loop.index }}</td>
+                        <th class="col-sm-3">"{{ book.title }}"</th>
+                        <td class="col-sm-2">{{ book.isbn }}</td>
+                        <td class="col-sm-3">{{ book.author }}</td>
+                        <td class="col-sm-1 text-center">{{ book.copies }}</td>
+                        <td class="col-sm-1 text-center">{{ book.borrowed_copies }}</td>
+                        <td class="col-sm-1 text-center">
+                            <a href="/details_book/{{ book.id }}/" class="my-link">Zobacz</a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr class="d-flex flex-wrap">
+                        <th colspan="7" class="col-sm-12">
+                            {% if request.args.search %}
+                                Brak szukanych pozycji w bazie danych !!!
+                            {% else %}
+                                Brak pozycji w bazie danych !!!
+                            {% endif %}
+                        </th>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>          
+    </div>
+{% endblock content %}

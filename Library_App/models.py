@@ -51,7 +51,7 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(200), primary_key=False, unique=False, nullable=False)
     created_on = db.Column(db.DateTime, index=False, unique=False, nullable=False)
     last_login = db.Column(db.DateTime, index=False, unique=False, nullable=True)
-    books = db.relationship('Books_Users', back_populates='users', cascade='all, delete')
+    books = db.relationship('Books_Users', back_populates='user', cascade='all, delete')
 
     def set_password(self, password):
         """Create hashed password."""
@@ -83,8 +83,8 @@ class Book(db.Model):
     borrowed_copies = db.Column(db.Integer, nullable=False, default=u'0', server_default=u'0', unique=False)
     author_id = db.Column(db.Integer, db.ForeignKey('authors.id', ondelete='CASCADE'), nullable=False, unique=False)
     author = db.relationship('Author', back_populates='books')
-    categories = db.relationship('Category', back_populates='books')
-    users = db.relationship('Books_Users', back_populates='books', cascade='all, delete')
+    categories = db.relationship('Category', secondary=books_categories, back_populates='books')
+    users = db.relationship('Books_Users', back_populates='book', cascade='all, delete')
 
     def __repr__(self):
         return '<id {} - book>'.format(self.id)
