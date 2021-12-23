@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request
 from . import db
-from .models import Book
+from .models import Book, Author
 main = Blueprint('main', __name__)
 
 
@@ -25,7 +25,16 @@ def books():
 
 @main.route('/authors/')
 def authors():
-    return 'Authors'
+    search = request.args.get('search')
+    if search:
+        authors_list = Author.query.filter(Author.name.ilike(f'{search}%')).all()
+    else:
+        authors_list = Author.query.order_by(Author.name).all()
+    
+    return render_template(
+        'authors.html',
+        authors_list=authors_list
+        )
 
 
 @main.route('/profile/')
