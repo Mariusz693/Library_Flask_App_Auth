@@ -9,7 +9,7 @@ def index():
     return render_template('index.html')
 
 
-@main.route('/books/')
+@main.route('/books')
 def books():
     search = request.args.get('search')
     if search:
@@ -23,7 +23,7 @@ def books():
         )
 
 
-@main.route('/authors/')
+@main.route('/authors')
 def authors():
     search = request.args.get('search')
     if search:

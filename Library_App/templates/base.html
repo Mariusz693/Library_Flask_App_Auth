@@ -24,8 +24,8 @@
                     <li class="nav-item">
                         <a class="nav-link {% if request.path != url_for('main.authors') %} active {% endif %}" href="{{ url_for('main.authors') }}">Autorzy</a>
                     </li>
-                    {% if current_user.is_auth %}
-                        {% if current_user.status == client %}
+                    {% if current_user.is_authenticated %}
+                        {% if current_user.status.value == 0 %}
                         <li class="nav-item">
                             <a class="nav-link {% if request.path != '/client_book/' %} active {% endif %}" href="/client_book/">Wypożyczenia</a>
                         </li>
@@ -51,12 +51,12 @@
                     {% endif %}
                 </ul>
                 <div class="col d-flex justify-content-end navbar-nav">
-                    {% if current_user.is_auth %}
-                    <a class="nav-link {% if request.path != '/profile/' %} active {% endif %}" href="{{ url_for('main.profil') }}">{{ current_user }}</a>
+                    {% if current_user.is_authenticated %}
+                    <a class="nav-link {% if request.path != url_for('main.profile') %} active {% endif %}" href="{{ url_for('main.profile') }}">{{ current_user }}</a>
                     <a class="nav-link active" href="{{ url_for('auth.logout') }}">Wyloguj</a>
                     {% else %}
                     <a class="nav-link active" href="{{ url_for('auth.login') }}">Zaloguj</a>
-                    <a class="nav-link active" href="{{ url_for('auth.signup') }}">Rejestracja</a>
+                    <a class="nav-link active" href="{{ url_for('auth.register') }}">Rejestracja</a>
                     {% endif %}
                 </div>
             </div>

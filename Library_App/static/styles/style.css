@@ -21,10 +21,6 @@ div.my-container {
     margin-bottom: 75px;
 }
 
-tr.my-table {
-    margin-top: 10px;
-}
-
 img.my-style {
     margin-top: 50px;
     margin-bottom: 100px;
@@ -38,6 +34,25 @@ div.my-header {
 
 div.my-row{
     margin-bottom: 20px;
+}
+
+a.my-button {
+    margin-left: 20px;
+    align-self: center;
+}
+
+button.my-button {
+    margin-left: 20px;
+    align-self: center;
+}
+
+
+
+
+
+
+tr.my-table {
+    margin-top: 10px;
 }
 
 li.my-list {
@@ -63,16 +78,6 @@ div.my-checkbox {
     margin-bottom: 5px;
 }
 
-a.my-button {
-    margin-left: 20px;
-    align-self: center;
-}
-
-button.my-button {
-    margin-left: 20px;
-    align-self: center;
-}
-
 a.my-link {
     text-decoration: none;
 }
@@ -91,4 +96,33 @@ input[type=checkbox] {
 
 input.my-search-input {
     max-width: 300px;
+}
+
+
+
+
+div.my-input-area {
+    padding-left: 5%;
+    padding-right: 5%;
+    margin-bottom: 10px;
+}
+
+label.my-bold-text {
+    font-weight: bold;
+}
+
+div.my-alert {
+    width: 92%;
+    margin-left: 4%;
+    margin-right: 4%;
+}
+
+button.my-close {
+    height: 25px;
+    width: 50px;
+    line-height: 12.5px;
+}
+
+li.my-error {
+    color: red;
 }
