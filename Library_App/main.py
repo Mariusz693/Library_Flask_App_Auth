@@ -1,7 +1,12 @@
 from flask import Blueprint, render_template, request
 from . import db
 from .models import Book, Author
-main = Blueprint('main', __name__)
+
+main = Blueprint(
+    'main', __name__,
+    template_folder='templates',
+    static_folder='static'
+    )
 
 
 @main.route('/')

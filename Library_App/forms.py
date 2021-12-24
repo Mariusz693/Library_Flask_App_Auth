@@ -4,7 +4,7 @@ from wtforms.validators import DataRequired, Regexp, Email, EqualTo, Length
 
 
 class RegisterForm(FlaskForm):
-
+    """User Register Form."""
     first_name = StringField('Imię *', validators=[DataRequired(message='Pole obowiązkowe')])
     last_name = StringField('Nazwisko *', validators=[DataRequired(message='Pole obowiązkowe')])
     email = StringField(
@@ -36,17 +36,17 @@ class RegisterForm(FlaskForm):
             EqualTo('password', message='Hasła muszą być identyczne.')
         ]
     ) 
-    submit = SubmitField('Zapisz')
+    submit = SubmitField('Rejestruj')
 
 
 class LoginForm(FlaskForm):
-    """User Log-in Form."""
-    # email = StringField(
-    #     'Email',
-    #     validators=[
-    #         DataRequired(),
-    #         Email(message='Enter a valid email.')
-    #     ]
-    # )
-    password = PasswordField('Password', validators=[DataRequired()])
-    submit = SubmitField('Log In')
+    """User Login Form."""
+    email = StringField(
+        'Email *',
+        validators=[
+            DataRequired(message='Pole obowiązkowe'),
+            Email(message='Nie poprawny adres email')
+        ]
+    )
+    password = PasswordField('Hasło *', validators=[DataRequired(message='Pole obowiązkowe')])
+    submit = SubmitField('Zaloguj')

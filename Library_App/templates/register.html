@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %} Dodaj Użytkownika {% endblock %}
+{% block title %} Rejestracja {% endblock %}
 {% block content %}
     <div class="container my-container">
         <div class="mt-4 ml-4 mr-4">
@@ -15,9 +15,11 @@
                     </div>
                 </div>
                 {% for message in get_flashed_messages() %}
-                <div class="col-sm-12 alert alert-danger text-center my-alert">
-                    {{ message }}
-                    <button type="button" class="btn btn-danger my-close" data-dismiss="alert">X</button>
+                <div class="row">
+                    <div class="col-sm-12 alert alert-danger text-center my-alert">
+                        {{ message }}
+                        <button type="button" class="btn btn-danger my-close" data-dismiss="alert">X</button>
+                    </div>
                 </div>
                 {% endfor %}
                 <div class="form-group row">
@@ -96,7 +98,7 @@
         </div>
         <div>                
             <img class="rounded mx-auto d-block img-thumbnail my-style" 
-            src="{{ url_for('static', filename='images/add_user.jpg') }}" alt="Add User photo">
+            src="{{ url_for('static', filename='images/register.jpg') }}" alt="Register photo">
         </div>
     </div>
 {% endblock content %}
