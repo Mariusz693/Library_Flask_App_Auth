@@ -26,11 +26,6 @@ img.my-style {
     margin-bottom: 100px;
 }
 
-div.my-header {
-    margin-bottom: 20px;
-    margin-right: 2.5px;
-    margin-left: 2.5px;
-}
 
 div.my-row{
     margin-bottom: 20px;
@@ -38,7 +33,7 @@ div.my-row{
 
 a.my-button {
     margin-left: 20px;
-    align-self: center;
+    /* align-self: center; */
 }
 
 button.my-button {
@@ -125,4 +120,14 @@ button.my-close {
 
 li.my-error {
     color: red;
+}
+
+div.my-header-row {
+    margin-bottom: 20px;
+    margin-right: 2.5px;
+    margin-left: 2.5px;
+}
+
+div.my-header-col {
+    align-items: baseline;
 }

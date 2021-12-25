@@ -5,11 +5,11 @@
         <div class="mt-4 ml-4 mr-4">
             <form action="{{ url_for('auth.register') }}" method="POST">
                 {{ form.csrf_token }}
-                <div class="row border-bottom border-3 my-header">
-                    <div class="col-sm-9 mb-2">
+                <div class="row border-bottom border-3 my-header-row">
+                    <div class="col-sm-9 mb-2 my-header-col">
                         <h4 class="color-header">Rejestracja</h4>
                     </div>
-                    <div class="col-sm-3 d-flex justify-content-end mb-2">
+                    <div class="col-sm-3 d-flex justify-content-end mb-2 my-header-col">
                         {{ form.submit(class="btn btn-success my-button") }}
                         <a href="{{ url_for('main.index') }}" class="btn btn-info my-button">Anuluj</a>
                     </div>

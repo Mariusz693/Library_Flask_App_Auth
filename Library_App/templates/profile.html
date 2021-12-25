@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %} Profil Użytkownika {% endblock %}
+{% block content %}
+    <div class="container my-container">
+        <div class="mt-4 ml-4 mr-4">
+            <div class="row border-bottom border-3 my-header-row">
+                {% if user.id == current_user.id %}        
+                <div class="col-sm-9 mb-2 my-header-col">
+                    <h4 class="color-header">Mój profil</h4>
+                </div>
+                <div class="col-sm-3 d-flex justify-content-end mb-2 my-header-col">
+                    <h5 class="color-header">{{ user.status.name }}</h5>
+                    <a href="{{ url_for('main.edit_profile') }}" class="btn btn-success my-button">Edytuj</a>
+                    <a href="{{ url_for('main.remove') }}" class="btn btn-danger my-button">Usuń</a>
+                </div>
+                {% else %}
+                <div class="col-sm-9 mb-2 my-header-col">
+                    <h4 class="color-header">Profil Użytkownika</h4>
+                </div>
+                <div class="col-sm-3 d-flex justify-content-end mb-2 my-header-col">
+                    <h5 class="color-header">{{ user.status.name }}</h5>
+                    <a href="{{ url_for('main.delete_user', user_id=user.id) }}" class="btn btn-danger my-button">Usuń</a>
+                    <a href="{{ url_for('main.users') }}" class="btn btn-info my-button">Usuń</a>
+                </div>
+                {% endif %}
+            </div>
+            <div class="row">
+                <div class="col-9">
+                    <div class="row my-row">
+                        <div class="col-sm-4 my-bold-text">Imię:</div>
+                        <div class="col-sm-8">{{ user.first_name }}</div>
+                    </div>
+                    <div class="row my-row">
+                        <div class="col-sm-4 my-bold-text">Nazwisko:</div>
+                        <div class="col-sm-8">{{ user.last_name }}</div>
+                    </div>
+                    <div class="row my-row">
+                        <div class="col-sm-4 my-bold-text">Adres email:</div>
+                        <div class="col-sm-8">{{ user.email }}</div>
+                    </div>
+                    <div class="row my-row">
+                        <div class="col-sm-4 my-bold-text">Numer telefonu:</div>
+                        <div class="col-sm-8">{% if user.phone_number %} (+48) {{ user.phone_number }} {% else %} (brak danych) {% endif %}</div>
+                    </div>
+                    <div class="row my-row">
+                        <div class="col-sm-4 my-bold-text">Data rejestracji:</div>
+                        <div class="col-sm-8">{{ user.created_on.strftime('%d.%m.%Y, godz. %H:%M:%S') }}</div>
+                    </div>
+                    <div class="row my-row">
+                        <div class="col-sm-4 my-bold-text">Ostatnie logowanie:</div>
+                        <div class="col-sm-8">{{ user.last_login.strftime('%d.%m.%Y, godz. %H:%M:%S') }}</div>
+                    </div>
+                    <div class="row my-row">
+                        <div class="col-sm-4 my-bold-text">Wypożyczonych aktualnie:</div>
+                        <div class="col-sm-8">{{ actuall_loan|count }}</div>
+                    </div>
+                    {% if actuall_loan %}
+                    <div class="row my-row">
+                        <div class="col-sm-4 my-bold-text">Tytuły na wypożyczeniu:</div>
+                        <div class="col-sm-8">
+                            {% for loan in actuall_loan %}
+                            <a href="{{ url_for('main.book', book_id=loan.book_id) }}" class="my-link">"{{ loan.book }}"</a>
+                            {% if not loop.last %},&nbsp;{% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if current_user.status.value == 1 %}
+                    <div class="row my-row">
+                        <div class="col-sm-12">
+                            <a href="{{ url_for('main.user_loan', user_id=user.id) }}" class="btn btn-info">Historia wypożyczeń</a>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="col-3">
+                    <img class="rounded mx-auto d-block img-thumbnail" 
+                    src="{{ url_for('static', filename='images/profile.jpg') }}" alt="Profile user photo">
+                </div>
+            </div>
+        </div>                
+    </div>
+{% endblock content %}

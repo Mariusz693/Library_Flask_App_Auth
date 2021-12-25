@@ -1,9 +1,10 @@
 from datetime import datetime
 from flask import Blueprint, request, redirect, render_template, url_for, flash
-from flask_login import login_user, current_user, logout_user
+from flask_login import login_user, current_user, logout_user, login_required
 from .models import db, User
 # from . import db
 from .forms import RegisterForm, LoginForm
+from . import login_manager
 
 auth = Blueprint(
     'auth', __name__,
@@ -28,12 +29,13 @@ def login():
             user.last_login = datetime.now()
             db.session.commit()
             next_page = request.args.get('next')
-            
+
             return redirect(next_page or url_for('main.index'))
+        
         elif user:
-            flash('Błąd logowania, błędnie podane hasło')
+            flash('Błąd logowania, błędnie podane hasło.')
         else:
-            flash('Błąd logowania, brak użytkownika o podanym adresie email')
+            flash('Błąd logowania, brak użytkownika o podanym adresie email.')
 
     return render_template(
         'login.html',
@@ -65,12 +67,13 @@ def register():
 
             return redirect(url_for('main.index'))
         
-        flash('Użytkownik o podanym adresie email już istnieje w bazie')
+        flash('Użytkownik o podanym adresie email już istnieje w bazie.')
             
     return render_template(
         'register.html',
         form=form
         )
+
 
 @auth.route('/logout')
 def logout():
@@ -78,3 +81,19 @@ def logout():
     logout_user()
 
     return redirect(url_for('main.index'))
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    """Check if user is logged-in on every page load."""
+    if user_id is not None:
+        return User.query.get(user_id)
+    return None
+
+
+@login_manager.unauthorized_handler
+def unauthorized():
+    """Redirect unauthorized users to Login page."""
+    flash('Musisz być zalogowany aby otworzyć tą stronę.')
+    
+    return redirect(url_for('auth.login') + f"?next={request.path}")
