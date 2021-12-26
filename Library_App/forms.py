@@ -52,7 +52,7 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Zaloguj')
 
 
-class EditProfileForm(FlaskForm):
+class ProfileForm(FlaskForm):
     """User Edit Profile Form."""
     first_name = StringField('Imię *', validators=[DataRequired(message='Pole obowiązkowe.')])
     last_name = StringField('Nazwisko *', validators=[DataRequired(message='Pole obowiązkowe.')])
@@ -71,4 +71,24 @@ class EditProfileForm(FlaskForm):
             Regexp('^[0-9]*$' , message='Numer telefonu musi się składać tylko z cyfr.')
         ]
     )
+    submit = SubmitField('Zapisz')
+
+
+class PasswordForm(FlaskForm):
+    """User Password Check Form."""
+    password = PasswordField('Hasło *', validators=[DataRequired(message='Pole obowiązkowe.')])
+    new_password = PasswordField(
+        'Nowe hasło *',
+        validators=[
+            DataRequired(message='Pole obowiązkowe.'),
+            Length(min=8, message='Wpisz mocniejsze hasło.')
+        ]
+    )
+    repeat_new_password = PasswordField(
+        'Powtórz nowe hasło *',
+        validators=[
+            DataRequired(message='Pole obowiązkowe.'),
+            EqualTo('new_password', message='Hasła muszą być identyczne.')
+        ]
+    ) 
     submit = SubmitField('Zapisz')

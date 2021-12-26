@@ -2,7 +2,7 @@ from datetime import datetime
 from flask import Blueprint, request, redirect, render_template, url_for, flash
 from flask_login import login_user, current_user, logout_user, login_required
 from .models import db, User
-from .forms import RegisterForm, LoginForm, EditProfileForm
+from .forms import RegisterForm, LoginForm, ProfileForm, PasswordForm
 from . import login_manager
 
 auth = Blueprint(
@@ -86,7 +86,7 @@ def logout():
 @login_required
 def edit_profile():
     
-    form = EditProfileForm(obj=current_user)
+    form = ProfileForm(obj=current_user)
 
     if form.validate_on_submit():
         existing_user = User.query.filter_by(email=form.email.data).first()
@@ -112,26 +112,20 @@ def edit_profile():
 @login_required
 def edit_password():
     
-    user = User.query.get_or_404(current_user.id)
-    
-    form = EditProfileForm(obj=user)
+    form = PasswordForm()
 
     if form.validate_on_submit():
-        existing_user = User.query.filter_by(email=form.email.data).first()
-        print(existing_user)
-        if existing_user == user or existing_user is None:
-            user.first_name = form.first_name.data
-            user.last_name = form.last_name.data
-            user.email = form.email.data
-            user.phone_number = form.phone_number.data
+        if current_user.check_password(password=form.password.data):
+            current_user.set_password(form.new_password.data)
             db.session.commit()
+            logout_user()
 
-            return redirect(url_for('main.profile'))
+            return redirect(url_for('auth.login'))
+        
+        flash('Błądne hasło, wpisz poprawnie stare hasło.')
 
-        flash('Użytkownik o podanym adresie email już istnieje w bazie.')
-            
     return render_template(
-        'edit_profile.html',
+        'password.html',
         form=form
         )
 
