@@ -6,21 +6,22 @@
             <div class="row border-bottom border-3 my-header-row">
                 {% if user.id == current_user.id %}        
                 <div class="col-sm-9 mb-2 my-header-col">
-                    <h4 class="color-header">Mój profil</h4>
+                    <h4 class="color-header">Mój profil - {{ current_user }}</h4>
                 </div>
                 <div class="col-sm-3 d-flex justify-content-end mb-2 my-header-col">
                     <h5 class="color-header">{{ user.status.name }}</h5>
-                    <a href="{{ url_for('main.edit_profile') }}" class="btn btn-success my-button">Edytuj</a>
-                    <a href="{{ url_for('main.remove') }}" class="btn btn-danger my-button">Usuń</a>
+                    <a href="{{ url_for('auth.edit_profile') }}" class="btn btn-success my-button">Edytuj</a>
+                    <a href="{{ url_for('auth.edit_password') }}" class="btn btn-success my-button">Hasło</a>
+                    <a href="{{ url_for('auth.remove') }}" class="btn btn-danger my-button">Usuń</a>
                 </div>
                 {% else %}
                 <div class="col-sm-9 mb-2 my-header-col">
-                    <h4 class="color-header">Profil Użytkownika</h4>
+                    <h4 class="color-header">Profil Użytkownika - {{ user }}</h4>
                 </div>
                 <div class="col-sm-3 d-flex justify-content-end mb-2 my-header-col">
                     <h5 class="color-header">{{ user.status.name }}</h5>
                     <a href="{{ url_for('main.delete_user', user_id=user.id) }}" class="btn btn-danger my-button">Usuń</a>
-                    <a href="{{ url_for('main.users') }}" class="btn btn-info my-button">Usuń</a>
+                    <a href="{{ url_for('main.users') }}" class="btn btn-info my-button">Użytkownicy</a>
                 </div>
                 {% endif %}
             </div>
@@ -65,13 +66,11 @@
                         </div>
                     </div>
                     {% endif %}
-                    {% if current_user.status.value == 1 %}
                     <div class="row my-row">
                         <div class="col-sm-12">
                             <a href="{{ url_for('main.user_loan', user_id=user.id) }}" class="btn btn-info">Historia wypożyczeń</a>
                         </div>
                     </div>
-                    {% endif %}
                 </div>
                 <div class="col-3">
                     <img class="rounded mx-auto d-block img-thumbnail" 

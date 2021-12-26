@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_required, current_user
-from . import db
-from .models import Book, Author, User, Books_Users
+from .models import db, Book, Author, User, Books_Users
+
 
 main = Blueprint(
     'main', __name__,
@@ -12,6 +12,7 @@ main = Blueprint(
 
 @main.route('/')
 def index():
+
     return render_template('index.html')
 
 
@@ -37,6 +38,7 @@ def books():
 
 @main.route('/authors')
 def authors():
+    
     search = request.args.get('search')
     if search:
         authors_list = Author.query.filter(Author.name.ilike(f'{search}%')).all()
@@ -51,6 +53,7 @@ def authors():
 
 @main.route('/users')
 def users():
+    
     search = request.args.get('search')
     if search:
         users_list = User.query.filter(User.name.ilike(f'{search}%')).all()
@@ -66,38 +69,13 @@ def users():
 @main.route('/profile')
 @login_required
 def profile():
-    user = User.query.get_or_404(current_user.id)
-    actuall_loan = Books_Users.query.filter_by(user=user, return_date=None).order_by(Books_Users.loan_date.asc()).all()
+    
+    actuall_loan = Books_Users.query.filter_by(user=current_user, return_date=None).order_by(
+        Books_Users.loan_date.asc()).all()
     
     return render_template(
         'profile.html',
-        user=user,
-        actuall_loan=actuall_loan
-        )
-
-
-@main.route('/edit_profile')
-@login_required
-def edit_profile():
-    user = User.query.get_or_404(current_user.id)
-    actuall_loan = Books_Users.query.filter_by(user=user, return_date=None).order_by(Books_Users.loan_date.asc()).all()
-    
-    return render_template(
-        'profile.html',
-        user=user,
-        actuall_loan=actuall_loan
-        )
-
-
-@main.route('/remove')
-@login_required
-def remove():
-    user = User.query.get_or_404(current_user.id)
-    actuall_loan = Books_Users.query.filter_by(user=user, return_date=None).order_by(Books_Users.loan_date.asc()).all()
-    
-    return render_template(
-        'profile.html',
-        user=user,
+        user=current_user,
         actuall_loan=actuall_loan
         )
 
@@ -105,6 +83,21 @@ def remove():
 @main.route('/delete_user/<int:user_id>')
 @login_required
 def delete_user(user_id):
+    # user = User.query.get_or_404(current_user.id)
+    # actuall_loan = Books_Users.query.filter_by(user=user, return_date=None).order_by(Books_Users.loan_date.asc()).all()
+    
+    # return render_template(
+    #     'profile.html',
+    #     user=user,
+    #     actuall_loan=actuall_loan
+    #     )
+    return render_template('index.html')
+
+
+
+@main.route('/user_loan/<int:user_id>')
+@login_required
+def user_loan(user_id):
     # user = User.query.get_or_404(current_user.id)
     # actuall_loan = Books_Users.query.filter_by(user=user, return_date=None).order_by(Books_Users.loan_date.asc()).all()
     
