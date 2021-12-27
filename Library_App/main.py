@@ -56,9 +56,9 @@ def users():
     
     search = request.args.get('search')
     if search:
-        users_list = User.query.filter(User.name.ilike(f'{search}%')).all()
+        users_list = User.query.filter(User.last_name.ilike(f'{search}%')).all()
     else:
-        users_list = User.query.order_by(User.name).all()
+        users_list = User.query.order_by(User.last_name).all()
     
     return render_template(
         'users.html',
@@ -76,6 +76,34 @@ def profile():
     return render_template(
         'profile.html',
         user=current_user,
+        actuall_loan=actuall_loan
+        )
+
+
+@main.route('/profile_user/<int:user_id>')
+@login_required
+def profile_user(user_id):
+    user = User.query.get_or_404(user_id)
+    actuall_loan = Books_Users.query.filter_by(user=user, return_date=None).order_by(
+        Books_Users.loan_date.asc()).all()
+    
+    return render_template(
+        'profile_user.html',
+        user=user,
+        actuall_loan=actuall_loan
+        )
+
+
+@main.route('/chenge_user/<int:user_id>')
+@login_required
+def change_user(user_id):
+    user = User.query.get_or_404(user_id)
+    actuall_loan = Books_Users.query.filter_by(user=user, return_date=None).order_by(
+        Books_Users.loan_date.asc()).all()
+    
+    return render_template(
+        'profile_user.html',
+        user=user,
         actuall_loan=actuall_loan
         )
 

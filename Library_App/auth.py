@@ -135,15 +135,18 @@ def edit_password():
 def remove():
 
     if request.method == 'POST':
-        for loan in current_user.books:
-            if loan.return_date is None:
-                flash('Posiadasz książki na wypożyczeniu, zwróć wszystkie', 'danger')
-                break
+        if current_user.status.value == 1 and User.query.filter_by(status='Administrator').count() < 2:
+            flash('Jestes jedynym administratorem, nie możesz usunąć profilu', 'danger')
         else:
-            db.session.delete(current_user)
-            db.session.commit()
+            for loan in current_user.books:
+                if loan.return_date is None:
+                    flash('Posiadasz książki na wypożyczeniu, zwróć wszystkie', 'danger')
+                    break
+            else:
+                db.session.delete(current_user)
+                db.session.commit()
 
-            return redirect(url_for('main.index'))
+                return redirect(url_for('main.index'))
         
     else:
         flash('Usuwając profil usuwasz historię wypożyczeń', 'warning')

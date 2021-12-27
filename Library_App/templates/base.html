@@ -27,7 +27,7 @@
                     {% if current_user.is_authenticated %}
                         {% if current_user.status.value == 1 %}
                         <li class="nav-item">
-                            <a class="nav-link {% if request.path != '/clients/' %} active {% endif %}" href="/clients/">Użytkownicy</a>
+                            <a class="nav-link {% if request.path != url_for('main.users') %} active {% endif %}" href="{{ url_for('main.users') }}">Użytkownicy</a>
                         </li>
                         <li class="nav-item dropdown">
                             <li class="nav-item dropdown">
