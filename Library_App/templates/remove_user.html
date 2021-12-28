@@ -5,14 +5,25 @@
         <div class="mt-4 ml-4 mr-4">
             <form method="POST">
                 <div class="row border-bottom border-3 my-header-row">
+                    {% if admin %}
                     <div class="col-sm-9 mb-2 my-header-col">
-                        <h4 class="color-header">Potwierdz usunięcie profilu - {{ current_user }}</h4>
+                        <h4 class="color-header">Potwierdz usunięcie profilu - {{ user }}</h4>
+                    </div>
+                    <div class="col-sm-3 d-flex justify-content-end mb-2 my-header-col">
+                        <h5 class="color-header">{{ user.status.value }}</h5>
+                        <button type="submit" class="btn btn-danger my-button">Potwierdź</button>
+                        <a href="{{ url_for('main.profile_user', user_id=user.id ) }}" class="btn btn-info my-button">Anuluj</a>
+                    </div>
+                    {% else %}
+                    <div class="col-sm-9 mb-2 my-header-col">
+                        <h4 class="color-header">Potwierdz usunięcie swojego profilu - {{ user }}</h4>
                     </div>
                     <div class="col-sm-3 d-flex justify-content-end mb-2 my-header-col">
                         <h5 class="color-header">{{ user.status.value }}</h5>
                         <button type="submit" class="btn btn-danger my-button">Potwierdź</button>
                         <a href="{{ url_for('main.profile') }}" class="btn btn-info my-button">Anuluj</a>
                     </div>
+                    {% endif %}
                 </div>
             </form>
             {% for category, message in get_flashed_messages(with_categories=true) %}
@@ -48,10 +59,6 @@
                     <div class="row my-row">
                         <div class="col-sm-4 my-bold-text">Ostatnie logowanie:</div>
                         <div class="col-sm-8">{{ user.last_login.strftime('%d.%m.%Y, godz. %H:%M:%S') }}</div>
-                    </div>
-                    <div class="row my-row">
-                        <div class="col-sm-4 my-bold-text">Wypożyczonych aktualnie:</div>
-                        <div class="col-sm-8">{{ actuall_loan|count }}</div>
                     </div>
                 </div>
                 <div class="col-3">

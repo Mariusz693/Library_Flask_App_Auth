@@ -72,7 +72,7 @@ def profile():
         Books_Users.loan_date.asc()).all()
     
     return render_template(
-        'profile.html',
+        'profile_user.html',
         user=current_user,
         actuall_loan=actuall_loan
         )
@@ -103,7 +103,8 @@ def profile_user(user_id):
     return render_template(
         'profile_user.html',
         user=user,
-        actuall_loan=actuall_loan
+        actuall_loan=actuall_loan,
+        admin=True
         )
 
 
@@ -143,19 +144,42 @@ def change_user(user_id):
         )
 
 
-@main.route('/delete_user/<int:user_id>')
+@main.route('/delete_user/<int:user_id>', methods=['GET', 'POST'])
 @login_required
 def delete_user(user_id):
-    # user = User.query.get_or_404(current_user.id)
-    # actuall_loan = Books_Users.query.filter_by(user=user, return_date=None).order_by(Books_Users.loan_date.asc()).all()
     
-    # return render_template(
-    #     'profile.html',
-    #     user=user,
-    #     actuall_loan=actuall_loan
-    #     )
-    return render_template('index.html')
+    if current_user.status.name != UserType.Admin.name:
+    
+        return redirect(url_for('main.wrong_access'))
 
+    user = User.query.get_or_404(user_id)
+    
+    if request.method == 'POST':
+        if user.status.name == 'Admin' and User.query.filter_by(status=UserType.Admin.name).count() < 2:
+            flash('Jestes jedynym administratorem, nie możesz usunąć profilu', 'danger')
+        else:
+            for loan in user.books:
+                if loan.return_date is None:
+                    flash('Użytkownik posiada książki na wypożyczeniu, poczekaj na zwrot wszystkich', 'danger')
+                    break
+            else:
+                status = user.status
+                db.session.delete(user)
+                db.session.commit()
+                if status == UserType.Admin:
+
+                    return redirect(url_for('main.users') + '?status=Admin')
+
+                return redirect(url_for('main.users'))
+        
+    else:
+        flash('Usuwając profil użytkownika usuwasz historię jego wypożyczeń', 'warning')
+
+    return render_template(
+        'remove_user.html',
+        user=user,
+        admin=True
+        )
 
 
 @main.route('/user_loan/<int:user_id>')

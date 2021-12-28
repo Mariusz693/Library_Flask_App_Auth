@@ -152,7 +152,7 @@ def remove():
         flash('Usuwając profil usuwasz historię wypożyczeń', 'warning')
 
     return render_template(
-        'remove.html',
+        'remove_user.html',
         user=current_user,
         )
 
