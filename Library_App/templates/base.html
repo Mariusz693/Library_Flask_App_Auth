@@ -25,7 +25,7 @@
                         <a class="nav-link {% if request.path != url_for('main.authors') %} active {% endif %}" href="{{ url_for('main.authors') }}">Autorzy</a>
                     </li>
                     {% if current_user.is_authenticated %}
-                        {% if current_user.status.value == 1 %}
+                        {% if current_user.status.name == "Admin" %}
                         <li class="nav-item">
                             <a class="nav-link {% if request.path != url_for('main.users') %} active {% endif %}" href="{{ url_for('main.users') }}">Użytkownicy</a>
                         </li>

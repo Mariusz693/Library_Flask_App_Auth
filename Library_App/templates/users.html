@@ -5,20 +5,32 @@
         <div class="mt-4 ml-4 mr-4">
             <form action="{{ url_for('main.users') }}" method="GET">
                 <div class="row border-bottom border-3 my-header-row">
+                    {% if request.args.search %}
                     <div class="col-sm-6 mb-2 my-header-col">
-                        {% if request.args.search %}
                         <h4 class="color-header">Wyniki wyszukiwania nazwiska dla "{{ request.args.search }}"</h4>
-                        {% else %}
-                        <h4 class="color-header">Wszyscy użytkownicy w bazie</h4>
-                        {% endif %}
                     </div>
                     <div class="col-sm-6 d-flex justify-content-end mb-2 my-header-col">
                         <input type="text" class="form-control my-search-input" name="search" {% if request.args.search %} value="{{ request.args.search }}" {% endif %} placeholder="Wyszukaj">
                         <button type="submit" class="btn btn-success my-button">Szukaj</button>
-                        {% if request.args.search %} 
                         <a href="{{ url_for('main.users') }}" class="btn btn-info my-button">Wszyscy</a>
-                        {% endif %}           
                     </div>
+                    {% elif request.args.status == "Admin" %}
+                    <div class="col-sm-6 mb-2 my-header-col">
+                        <h4 class="color-header">Wszyscy administratorzy w bazie</h4>
+                    </div>
+                    <div class="col-sm-6 d-flex justify-content-end mb-2 my-header-col">
+                        <a href="{{ url_for('main.users') }}" class="btn btn-info my-button">Klienci</a>
+                    </div>
+                    {% else %}
+                    <div class="col-sm-6 mb-2 my-header-col">
+                        <h4 class="color-header">Wszyscy użytkownicy w bazie</h4>
+                    </div>
+                    <div class="col-sm-6 d-flex justify-content-end mb-2 my-header-col">
+                        <input type="text" class="form-control my-search-input" name="search" {% if request.args.search %} value="{{ request.args.search }}" {% endif %} placeholder="Wyszukaj">
+                        <button type="submit" class="btn btn-success my-button">Szukaj</button>
+                        <a href="{{ url_for('main.users') }}?status=Admin" class="btn btn-info my-button">Admini</a>
+                    </div>
+                    {% endif %}
                 </div>
             </form>
             <table class="table">
@@ -26,10 +38,9 @@
                     <tr class="d-flex flex-wrap">
                         <th class="col-sm-1">Lp.</th>
                         <th class="col-sm-2">Imię</th>
-                        <th class="col-sm-2">Nazwisko</th>
-                        <th class="col-sm-2">Email</th>
+                        <th class="col-sm-3">Nazwisko</th>
+                        <th class="col-sm-3">Email</th>
                         <th class="col-sm-2">Nr. telefonu</th>
-                        <th class="col-sm-2">Status</th>
                         <th class="col-sm-1 text-center">#</th>
                     </tr>
                 </thead>
@@ -38,12 +49,11 @@
                     <tr class="d-flex flex-wrap my-table">
                         <td class="col-sm-1">{{ loop.index }}</td>
                         <th class="col-sm-2">{{ user.first_name }}</th>
-                        <th class="col-sm-2">{{ user.last_name }}</th>
-                        <td class="col-sm-2">{{ user.email }}</td>
+                        <th class="col-sm-3">{{ user.last_name }}</th>
+                        <td class="col-sm-3">{{ user.email }}</td>
                         <td class="col-sm-2">
                             {% if user.phone_number %} (+48) {{ user.phone_number }} {% else %} (brak danych) {% endif %}
                         </td>
-                        <td class="col-sm-2">{{ user.status.name }}</td>
                         <td class="col-sm-1 text-center">
                             <a href="{{ url_for('main.profile_user', user_id=user.id) }}" class="my-link">Profil</a>
                         </td>

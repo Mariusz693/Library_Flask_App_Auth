@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_required, current_user
-from .models import db, Book, Author, User, Books_Users
-
+from .models import UserType, db, Book, Author, User, Books_Users
+from .forms import ChangeUser
 
 main = Blueprint(
     'main', __name__,
@@ -17,12 +17,7 @@ def index():
 
 
 @main.route('/books')
-# @login_required
 def books():
-
-    # if not current_user.is_authenticated:
-    #     flash('Musisz być zalogowany aby otworzyć tą stronę.')
-    #     return redirect(url_for('auth.login') + f"?next={request.path}")
 
     search = request.args.get('search')
     if search:
@@ -55,10 +50,13 @@ def authors():
 def users():
     
     search = request.args.get('search')
+    status = request.args.get('status')
     if search:
-        users_list = User.query.filter(User.last_name.ilike(f'{search}%')).all()
+        users_list = User.query.filter(User.last_name.ilike(f'{search}%')).filter_by(status=UserType.User.name).all()
+    elif status == UserType.Admin.name:
+        users_list = User.query.filter_by(status=UserType.Admin.name).order_by(User.last_name).all()
     else:
-        users_list = User.query.order_by(User.last_name).all()
+        users_list = User.query.filter_by(status=UserType.User.name).order_by(User.last_name).all()
     
     return render_template(
         'users.html',
@@ -80,9 +78,24 @@ def profile():
         )
 
 
+@main.route('/wrong_access')
+def wrong_access():
+    
+    flash('Brak uprawnień administratora aby otworzyć tą stronę.')
+    
+    return render_template(
+        'wrong_access.html',
+        )
+
+
 @main.route('/profile_user/<int:user_id>')
 @login_required
 def profile_user(user_id):
+    
+    if current_user.status.name != UserType.Admin.name:
+    
+        return redirect(url_for('main.wrong_access'))
+
     user = User.query.get_or_404(user_id)
     actuall_loan = Books_Users.query.filter_by(user=user, return_date=None).order_by(
         Books_Users.loan_date.asc()).all()
@@ -94,17 +107,39 @@ def profile_user(user_id):
         )
 
 
-@main.route('/chenge_user/<int:user_id>')
+@main.route('/change_user/<int:user_id>', methods=['GET', 'POST'])
 @login_required
 def change_user(user_id):
-    user = User.query.get_or_404(user_id)
-    actuall_loan = Books_Users.query.filter_by(user=user, return_date=None).order_by(
-        Books_Users.loan_date.asc()).all()
     
+    if current_user.status.name != UserType.Admin.name:
+    
+        return redirect(url_for('main.wrong_access'))
+
+    user = User.query.get_or_404(user_id)
+    
+    if user.status.name == UserType.User.name:
+        flash('Zmieniając status użytkownika dodajesz mu wszystkie uprawnienia', 'warning')
+    else:
+        flash('Zmieniając status użytkownika zabierasz mu wszystkie uprawnienia', 'warning')
+
+    form = ChangeUser()
+    
+    if form.validate_on_submit():
+        if user.status.name == UserType.Admin.name and User.query.filter_by(status=UserType.Admin.name).count() < 2 and form.status.data == UserType.User.name:
+            flash('Jestes jedynym administratorem, udziel komuś uprawnień administratora', 'danger')
+        else:
+            user.status = form.status.data
+            db.session.commit()
+
+            return redirect(url_for('main.profile_user', user_id=user.id))
+    
+    form.status.default = user.status.name
+    form.process()
+
     return render_template(
-        'profile_user.html',
+        'change_user.html',
         user=user,
-        actuall_loan=actuall_loan
+        form=form
         )
 
 

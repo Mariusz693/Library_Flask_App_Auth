@@ -8,10 +8,14 @@
                     <h4 class="color-header">Profil Użytkownika - {{ user }}</h4>
                 </div>
                 <div class="col-sm-3 d-flex justify-content-end mb-2 my-header-col">
-                    <h5 class="color-header">{{ user.status.name }}</h5>
+                    <h5 class="color-header">{{ user.status.value }}</h5>
                     <a href="{{ url_for('main.change_user', user_id=user.id) }}" class="btn btn-success my-button">Zmień</a>
                     <a href="{{ url_for('main.delete_user', user_id=user.id) }}" class="btn btn-danger my-button">Usuń</a>
+                    {% if user.status.name == "Admin" %}
+                    <a href="{{ url_for('main.users') }}?status=Admin" class="btn btn-info my-button">Admini</a>
+                    {% else %}
                     <a href="{{ url_for('main.users') }}" class="btn btn-info my-button">Użytkownicy</a>
+                    {% endif %}
                 </div>
             </div>
             <div class="row">

@@ -8,7 +8,7 @@
                     <h4 class="color-header">Mój profil - {{ current_user }}</h4>
                 </div>
                 <div class="col-sm-3 d-flex justify-content-end mb-2 my-header-col">
-                    <h5 class="color-header">{{ user.status.name }}</h5>
+                    <h5 class="color-header">{{ user.status.value }}</h5>
                     <a href="{{ url_for('auth.edit_profile') }}" class="btn btn-success my-button">Edytuj</a>
                     <a href="{{ url_for('auth.edit_password') }}" class="btn btn-success my-button">Hasło</a>
                     <a href="{{ url_for('auth.remove') }}" class="btn btn-danger my-button">Usuń</a>

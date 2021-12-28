@@ -1,7 +1,7 @@
 from datetime import datetime
 from flask import Blueprint, request, redirect, render_template, url_for, flash
 from flask_login import login_user, current_user, logout_user, login_required
-from .models import db, User
+from .models import db, User, UserType
 from .forms import RegisterForm, LoginForm, ProfileForm, PasswordForm
 from . import login_manager
 
@@ -135,7 +135,7 @@ def edit_password():
 def remove():
 
     if request.method == 'POST':
-        if current_user.status.value == 1 and User.query.filter_by(status='Administrator').count() < 2:
+        if current_user.status.name == 'Admin' and User.query.filter_by(status=UserType.Admin.name).count() < 2:
             flash('Jestes jedynym administratorem, nie możesz usunąć profilu', 'danger')
         else:
             for loan in current_user.books:

@@ -9,7 +9,7 @@
                         <h4 class="color-header">Potwierdz usunięcie profilu - {{ current_user }}</h4>
                     </div>
                     <div class="col-sm-3 d-flex justify-content-end mb-2 my-header-col">
-                        <h5 class="color-header">{{ user.status.name }}</h5>
+                        <h5 class="color-header">{{ user.status.value }}</h5>
                         <button type="submit" class="btn btn-danger my-button">Potwierdź</button>
                         <a href="{{ url_for('main.profile') }}" class="btn btn-info my-button">Anuluj</a>
                     </div>

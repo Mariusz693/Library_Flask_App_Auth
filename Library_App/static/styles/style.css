@@ -33,12 +33,14 @@ div.my-row{
 
 a.my-button {
     margin-left: 20px;
-    /* align-self: center; */
 }
 
 button.my-button {
     margin-left: 20px;
-    align-self: center;
+}
+
+input.my-button {
+    margin-left: 20px;
 }
 
 
