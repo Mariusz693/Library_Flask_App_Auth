@@ -12,7 +12,7 @@
                     <div class="col-sm-3 d-flex justify-content-end mb-2 my-header-col">
                         <h5 class="color-header">{{ user.status.value }}</h5>
                         <button type="submit" class="btn btn-danger my-button">Potwierdź</button>
-                        <a href="{{ url_for('main.profile_user', user_id=user.id ) }}" class="btn btn-info my-button">Anuluj</a>
+                        <a href="{{ url_for('main.user_profile', user_id=user.id ) }}" class="btn btn-info my-button">Anuluj</a>
                     </div>
                     {% else %}
                     <div class="col-sm-9 mb-2 my-header-col">
@@ -21,7 +21,7 @@
                     <div class="col-sm-3 d-flex justify-content-end mb-2 my-header-col">
                         <h5 class="color-header">{{ user.status.value }}</h5>
                         <button type="submit" class="btn btn-danger my-button">Potwierdź</button>
-                        <a href="{{ url_for('main.profile') }}" class="btn btn-info my-button">Anuluj</a>
+                        <a href="{{ url_for('auth.profile') }}" class="btn btn-info my-button">Anuluj</a>
                     </div>
                     {% endif %}
                 </div>
@@ -63,7 +63,7 @@
                 </div>
                 <div class="col-3">
                     <img class="rounded mx-auto d-block img-thumbnail" 
-                    src="{{ url_for('static', filename='images/remove.jpg') }}" alt="Remove profile photo">
+                    src="{{ url_for('static', filename='images/user_remove.jpg') }}" alt="User remove photo">
                 </div>
             </div>
         </div>                

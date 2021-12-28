@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_required, current_user
 from .models import UserType, db, Book, Author, User, Books_Users
-from .forms import ChangeUser
+from .forms import UserStatusForm, AuthorForm
 
 main = Blueprint(
     'main', __name__,
@@ -64,20 +64,6 @@ def users():
         )
 
 
-@main.route('/profile')
-@login_required
-def profile():
-    
-    actuall_loan = Books_Users.query.filter_by(user=current_user, return_date=None).order_by(
-        Books_Users.loan_date.asc()).all()
-    
-    return render_template(
-        'profile_user.html',
-        user=current_user,
-        actuall_loan=actuall_loan
-        )
-
-
 @main.route('/wrong_access')
 def wrong_access():
     
@@ -88,9 +74,9 @@ def wrong_access():
         )
 
 
-@main.route('/profile_user/<int:user_id>')
+@main.route('/user_profile/<int:user_id>')
 @login_required
-def profile_user(user_id):
+def user_profile(user_id):
     
     if current_user.status.name != UserType.Admin.name:
     
@@ -101,16 +87,16 @@ def profile_user(user_id):
         Books_Users.loan_date.asc()).all()
     
     return render_template(
-        'profile_user.html',
+        'user_profile.html',
         user=user,
         actuall_loan=actuall_loan,
         admin=True
         )
 
 
-@main.route('/change_user/<int:user_id>', methods=['GET', 'POST'])
+@main.route('/user_status/<int:user_id>', methods=['GET', 'POST'])
 @login_required
-def change_user(user_id):
+def user_status(user_id):
     
     if current_user.status.name != UserType.Admin.name:
     
@@ -123,7 +109,7 @@ def change_user(user_id):
     else:
         flash('Zmieniając status użytkownika zabierasz mu wszystkie uprawnienia', 'warning')
 
-    form = ChangeUser()
+    form = UserStatusForm()
     
     if form.validate_on_submit():
         if user.status.name == UserType.Admin.name and User.query.filter_by(status=UserType.Admin.name).count() < 2 and form.status.data == UserType.User.name:
@@ -132,21 +118,21 @@ def change_user(user_id):
             user.status = form.status.data
             db.session.commit()
 
-            return redirect(url_for('main.profile_user', user_id=user.id))
+            return redirect(url_for('main.user_profile', user_id=user.id))
     
     form.status.default = user.status.name
     form.process()
 
     return render_template(
-        'change_user.html',
+        'user_status.html',
         user=user,
         form=form
         )
 
 
-@main.route('/delete_user/<int:user_id>', methods=['GET', 'POST'])
+@main.route('/user_delete/<int:user_id>', methods=['GET', 'POST'])
 @login_required
-def delete_user(user_id):
+def user_delete(user_id):
     
     if current_user.status.name != UserType.Admin.name:
     
@@ -176,10 +162,102 @@ def delete_user(user_id):
         flash('Usuwając profil użytkownika usuwasz historię jego wypożyczeń', 'warning')
 
     return render_template(
-        'remove_user.html',
+        'user_remove.html',
         user=user,
         admin=True
         )
+
+
+@main.route('/author_add', methods=['GET', 'POST'])
+@login_required
+def author_add():
+    
+    if current_user.status.name != UserType.Admin.name:
+    
+        return redirect(url_for('main.wrong_access'))
+
+    form = AuthorForm()
+    
+    if form.validate_on_submit():
+
+        existing_author = Author.query.filter_by(name=form.name.data).first()
+        
+        if existing_author:
+
+            flash('Autor istnieje już w bazie danych', 'danger')
+
+        elif form.date_of_death.data and form.date_of_death.data < form.date_of_birth.data:
+        
+            flash('Data urodzenia autora nie może być większa od daty śmierci', 'danger')
+
+        else:
+            new_author = Author(
+                name=form.name.data,
+                date_of_birth=form.date_of_birth.data,
+                date_of_death=form.date_of_death.data
+            )
+            db.session.add(new_author)
+            db.session.commit()
+
+            flash('Dodano wpis nowego autora', 'success')
+    
+    return render_template(
+        'author_form.html',
+        form=form
+        )
+
+
+@main.route('/author_edit/<int:author_id>', methods=['GET', 'POST'])
+@login_required
+def author_edit(author_id):
+    
+    if current_user.status.name != UserType.Admin.name:
+    
+        return redirect(url_for('main.wrong_access'))
+    
+    author = Author.query.get_or_404(author_id)
+
+    form = AuthorForm(obj=author)
+    
+    if form.validate_on_submit():
+
+        existing_author = Author.query.filter_by(name=form.name.data).first()
+        
+        if existing_author and existing_author != author:
+
+            flash('Autor istnieje już w bazie danych', 'danger')
+
+        elif form.date_of_death.data and form.date_of_death.data < form.date_of_birth.data:
+        
+            flash('Data urodzenia autora nie może być większa od daty śmierci', 'danger')
+
+        else:
+            author.name=form.name.data,
+            author.date_of_birth=form.date_of_birth.data,
+            author.date_of_death=form.date_of_death.data
+            db.session.commit()
+
+            flash('Zmieniono wpis autora', 'success')
+    
+    return render_template(
+        'author_form.html',
+        form=form,
+        author=author
+        )
+
+
+@main.route('/author/<int:author_id>')
+@login_required
+def author(author_id):
+    # user = User.query.get_or_404(current_user.id)
+    # actuall_loan = Books_Users.query.filter_by(user=user, return_date=None).order_by(Books_Users.loan_date.asc()).all()
+    
+    # return render_template(
+    #     'profile.html',
+    #     user=user,
+    #     actuall_loan=actuall_loan
+    #     )
+    return render_template('index.html')
 
 
 @main.route('/user_loan/<int:user_id>')

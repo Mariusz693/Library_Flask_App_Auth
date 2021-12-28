@@ -1,8 +1,8 @@
 from datetime import datetime
 from flask import Blueprint, request, redirect, render_template, url_for, flash
 from flask_login import login_user, current_user, logout_user, login_required
-from .models import db, User, UserType
-from .forms import RegisterForm, LoginForm, ProfileForm, PasswordForm
+from .models import db, User, UserType, Books_Users
+from .forms import LoginForm, UserRegisterForm, UserEditForm, UserPasswordForm
 from . import login_manager
 
 auth = Blueprint(
@@ -42,10 +42,18 @@ def login():
     )
 
 
+@auth.route('/logout')
+def logout():
+
+    logout_user()
+
+    return redirect(url_for('main.index'))
+
+
 @auth.route('/register', methods=['GET', 'POST'])
 def register():
     
-    form = RegisterForm()
+    form = UserRegisterForm()
 
     if form.validate_on_submit():
         existing_user = User.query.filter_by(email=form.email.data).first()
@@ -69,24 +77,30 @@ def register():
         flash('Użytkownik o podanym adresie email już istnieje w bazie.')
             
     return render_template(
-        'register.html',
+        'user_register.html',
         form=form
         )
 
 
-@auth.route('/logout')
-def logout():
-
-    logout_user()
-
-    return redirect(url_for('main.index'))
-
-
-@auth.route('/edit_profile', methods=['GET', 'POST'])
+@auth.route('/profile')
 @login_required
-def edit_profile():
+def profile():
     
-    form = ProfileForm(obj=current_user)
+    actuall_loan = Books_Users.query.filter_by(user=current_user, return_date=None).order_by(
+        Books_Users.loan_date.asc()).all()
+    
+    return render_template(
+        'user_profile.html',
+        user=current_user,
+        actuall_loan=actuall_loan
+        )
+
+
+@auth.route('/user_edit', methods=['GET', 'POST'])
+@login_required
+def user_edit():
+    
+    form = UserEditForm(obj=current_user)
 
     if form.validate_on_submit():
         existing_user = User.query.filter_by(email=form.email.data).first()
@@ -98,21 +112,21 @@ def edit_profile():
             current_user.phone_number = form.phone_number.data
             db.session.commit()
 
-            return redirect(url_for('main.profile'))
+            return redirect(url_for('auth.profile'))
 
         flash('Użytkownik o podanym adresie email już istnieje w bazie.')
             
     return render_template(
-        'edit_profile.html',
+        'user_edit.html',
         form=form
         )
 
 
-@auth.route('/edit_password', methods=['GET', 'POST'])
+@auth.route('/user_password', methods=['GET', 'POST'])
 @login_required
-def edit_password():
+def user_password():
     
-    form = PasswordForm()
+    form = UserPasswordForm()
 
     if form.validate_on_submit():
         if current_user.check_password(password=form.password.data):
@@ -125,18 +139,19 @@ def edit_password():
         flash('Błądne hasło, wpisz poprawnie stare hasło.')
 
     return render_template(
-        'password.html',
+        'user_password.html',
         form=form
         )
 
 
-@auth.route('/remove', methods=['GET', 'POST'])
+@auth.route('/user_remove', methods=['GET', 'POST'])
 @login_required
-def remove():
+def user_remove():
 
     if request.method == 'POST':
-        if current_user.status.name == 'Admin' and User.query.filter_by(status=UserType.Admin.name).count() < 2:
+        if current_user.status.name == 'Admin' and User.query.filter_by(status=UserType.Admin.name).count() < 2:    
             flash('Jestes jedynym administratorem, nie możesz usunąć profilu', 'danger')
+        
         else:
             for loan in current_user.books:
                 if loan.return_date is None:
@@ -152,7 +167,7 @@ def remove():
         flash('Usuwając profil usuwasz historię wypożyczeń', 'warning')
 
     return render_template(
-        'remove_user.html',
+        'user_remove.html',
         user=current_user,
         )
 

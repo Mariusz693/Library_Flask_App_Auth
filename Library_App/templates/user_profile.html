@@ -10,8 +10,8 @@
                 </div>
                 <div class="col-sm-3 d-flex justify-content-end mb-2 my-header-col">
                     <h5 class="color-header">{{ user.status.value }}</h5>
-                    <a href="{{ url_for('main.change_user', user_id=user.id) }}" class="btn btn-success my-button">Zmień</a>
-                    <a href="{{ url_for('main.delete_user', user_id=user.id) }}" class="btn btn-danger my-button">Usuń</a>
+                    <a href="{{ url_for('main.user_status', user_id=user.id) }}" class="btn btn-success my-button">Zmień</a>
+                    <a href="{{ url_for('main.user_delete', user_id=user.id) }}" class="btn btn-danger my-button">Usuń</a>
                     {% if user.status.name == "Admin" %}
                     <a href="{{ url_for('main.users') }}?status=Admin" class="btn btn-info my-button">Admini</a>
                     {% else %}
@@ -24,9 +24,9 @@
                 </div>
                 <div class="col-sm-3 d-flex justify-content-end mb-2 my-header-col">
                     <h5 class="color-header">{{ user.status.value }}</h5>
-                    <a href="{{ url_for('auth.edit_profile') }}" class="btn btn-success my-button">Edytuj</a>
-                    <a href="{{ url_for('auth.edit_password') }}" class="btn btn-success my-button">Hasło</a>
-                    <a href="{{ url_for('auth.remove') }}" class="btn btn-danger my-button">Usuń</a>
+                    <a href="{{ url_for('auth.user_edit') }}" class="btn btn-success my-button">Edytuj</a>
+                    <a href="{{ url_for('auth.user_password') }}" class="btn btn-success my-button">Hasło</a>
+                    <a href="{{ url_for('auth.user_remove') }}" class="btn btn-danger my-button">Usuń</a>
                 </div>
                 {% endif %}
             </div>
@@ -79,7 +79,7 @@
                 </div>
                 <div class="col-3">
                     <img class="rounded mx-auto d-block img-thumbnail" 
-                    src="{{ url_for('static', filename='images/profile.jpg') }}" alt="Profile user photo">
+                    src="{{ url_for('static', filename='images/user_profile.jpg') }}" alt="User profile photo">
                 </div>
             </div>
         </div>                

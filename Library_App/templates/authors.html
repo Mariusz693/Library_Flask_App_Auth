@@ -15,8 +15,8 @@
                     <div class="col-sm-6 d-flex justify-content-end mb-2 my-header-col">
                         <input type="text" class="form-control my-search-input" name="search" {% if request.args.search %} value="{{ request.args.search }}" {% endif %} placeholder="Wyszukaj">
                         <button type="submit" class="btn btn-success my-button">Szukaj</button>
-                        {% if current_user.is_auth and current_user.status == client %}
-                        <a href="/add_author/" class="btn btn-info my-button">Dodaj</a>
+                        {% if current_user.is_authenticated and current_user.status.name == "Admin" %}
+                        <a href="{{ url_for('main.author_add') }}" class="btn btn-info my-button">Dodaj</a>
                         {% endif %}
                         {% if request.args.search %} 
                         <a href="{{ url_for('main.authors') }}" class="btn btn-info my-button">Wszyscy</a>
@@ -42,7 +42,7 @@
                         <td class="col-sm-2">{% if author.date_of_birth %} {{ author.date_of_birth.strftime('%d.%m.%Y') }} {% else %} (brak danych) {% endif %}</td>
                         <td class="col-sm-2">{% if author.date_of_death %} {{ author.date_of_death.strftime('%d.%m.%Y') }} {% else %} (brak danych) {% endif %}</td>
                         <td class="col-sm-1 text-center">
-                            <a href="/details_author/{{ author.id }}/" class="my-link">Profil</a>
+                            <a href="{{ url_for('main.author', author_id=author.id) }}" class="my-link">Profil</a>
                         </td>
                     </tr>
                     {% else %}

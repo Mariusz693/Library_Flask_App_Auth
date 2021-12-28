@@ -55,7 +55,7 @@
                             {% if user.phone_number %} (+48) {{ user.phone_number }} {% else %} (brak danych) {% endif %}
                         </td>
                         <td class="col-sm-1 text-center">
-                            <a href="{{ url_for('main.profile_user', user_id=user.id) }}" class="my-link">Profil</a>
+                            <a href="{{ url_for('main.user_profile', user_id=user.id) }}" class="my-link">Profil</a>
                         </td>
                     </tr>
                     {% else %}

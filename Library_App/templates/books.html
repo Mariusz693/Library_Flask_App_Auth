@@ -15,7 +15,7 @@
                     <div class="col-sm-6 d-flex justify-content-end mb-2 my-header-col">
                         <input type="text" class="form-control my-search-input" name="search" {% if request.args.search %} value="{{ request.args.search }}" {% endif %} placeholder="Wyszukaj">
                         <button type="submit" class="btn btn-success my-button">Szukaj</button>
-                        {% if current_user.is_auth and current_user.status == client %}
+                        {% if current_user.is_authenticated and current_user.status.name == "Admin" %}
                         <a href="/add_book/" class="btn btn-info my-button">Dodaj</a>
                         {% endif %}
                         {% if request.args.search %} 

@@ -12,7 +12,7 @@
                     <div class="col-sm-3 d-flex justify-content-end mb-2 my-header-col">
                         <h5 class="color-header">{{ user.status.value }}</h5>
                         {{ form.submit(class="btn btn-success my-button") }}
-                        <a href="{{ url_for('main.profile_user', user_id=user.id) }}" class="btn btn-info my-button">Anuluj</a>
+                        <a href="{{ url_for('main.user_profile', user_id=user.id) }}" class="btn btn-info my-button">Anuluj</a>
                     </div>
                 </div>
                 {% for category, message in get_flashed_messages(with_categories=true) %}
@@ -44,7 +44,7 @@
         </div>
         <div>                
             <img class="rounded mx-auto d-block img-thumbnail my-style" 
-            src="{{ url_for('static', filename='images/change_user.jpg') }}" alt="Change user photo">
+            src="{{ url_for('static', filename='images/user_status.jpg') }}" alt="User status photo">
         </div>
     </div>
 {% endblock content %}
