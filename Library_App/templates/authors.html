@@ -42,7 +42,7 @@
                         <td class="col-sm-2">{% if author.date_of_birth %} {{ author.date_of_birth.strftime('%d.%m.%Y') }} {% else %} (brak danych) {% endif %}</td>
                         <td class="col-sm-2">{% if author.date_of_death %} {{ author.date_of_death.strftime('%d.%m.%Y') }} {% else %} (brak danych) {% endif %}</td>
                         <td class="col-sm-1 text-center">
-                            <a href="{{ url_for('main.author', author_id=author.id) }}" class="my-link">Profil</a>
+                            <a href="{{ url_for('main.author_profile', author_id=author.id) }}" class="my-link">Profil</a>
                         </td>
                     </tr>
                     {% else %}

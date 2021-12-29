@@ -79,9 +79,9 @@ a.my-link {
     text-decoration: none;
 }
 
-div.my-error {
+/* div.my-error {
     color: darkred;
-}
+} */
 
 div.my-bold-text {
     font-weight: bold;

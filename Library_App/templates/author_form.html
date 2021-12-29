@@ -1,5 +1,11 @@
 {% extends "base.html" %}
-{% block title %} Dodaj autora {% endblock %}
+{% block title %} 
+{% if author %}
+Edytuj autora
+{% else %}
+Dodaj autora
+{% endif %}
+{% endblock %}
 {% block content %}
     <div class="container my-container">
         <div class="mt-4 ml-4 mr-4">
@@ -12,8 +18,7 @@
                     </div>
                     <div class="col-sm-3 d-flex justify-content-end mb-2 my-header-col">
                         {{ form.submit(class="btn btn-success my-button") }}
-                        <a href="{{ url_for('main.author', author_id=author.id) }}" class="btn btn-info my-button">Wstecz</a>
-                        <a href="{{ url_for('main.authors') }}" class="btn btn-info my-button">Autorzy</a>
+                        <a href="{{ url_for('main.author_profile', author_id=author.id) }}" class="btn btn-info my-button">Anuluj</a>
                     </div>
                 </div>
                 {% else %}
@@ -24,7 +29,6 @@
                     <div class="col-sm-3 d-flex justify-content-end mb-2 my-header-col">
                         {{ form.submit(class="btn btn-success my-button") }}
                         <a href="{{ url_for('main.index') }}" class="btn btn-info my-button">Anuluj</a>
-                        <a href="{{ url_for('main.authors') }}" class="btn btn-info my-button">Autorzy</a>
                     </div>
                 </div>
                 {% endif %}

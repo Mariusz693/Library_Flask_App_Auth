@@ -246,18 +246,45 @@ def author_edit(author_id):
         )
 
 
-@main.route('/author/<int:author_id>')
-@login_required
-def author(author_id):
-    # user = User.query.get_or_404(current_user.id)
-    # actuall_loan = Books_Users.query.filter_by(user=user, return_date=None).order_by(Books_Users.loan_date.asc()).all()
+@main.route('/author_profile/<int:author_id>')
+def author_profile(author_id):
+
+    author = Author.query.get_or_404(author_id)
     
-    # return render_template(
-    #     'profile.html',
-    #     user=user,
-    #     actuall_loan=actuall_loan
-    #     )
-    return render_template('index.html')
+    return render_template(
+        'author_profile.html',
+        author=author
+        )
+
+
+@main.route('/author_delete/<int:author_id>', methods=['GET', 'POST'])
+@login_required
+def author_delete(author_id):
+
+    if current_user.status.name != UserType.Admin.name:
+    
+        return redirect(url_for('main.wrong_access'))
+    
+    author = Author.query.get_or_404(author_id)
+
+    if request.method == 'POST':
+        for book in author.books:
+            if book.borrowed_copies > 0:
+                flash('Książki autora na wypożyczeniu, poczekaj na zwrot wszystkich', 'danger')
+                break
+        else:
+            db.session.delete(author)
+            db.session.commit()
+
+            return redirect(url_for('main.authors'))
+            
+    else:
+        flash('Usuwając profil autora usuwasz wszystkie jego książki', 'warning')
+
+    return render_template(
+        'author_delete.html',
+        author=author
+        )
 
 
 @main.route('/user_loan/<int:user_id>')
