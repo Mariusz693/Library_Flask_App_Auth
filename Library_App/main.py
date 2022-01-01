@@ -195,7 +195,7 @@ def author_add():
             db.session.add(new_author)
             db.session.commit()
 
-            flash('Dodano wpis nowego autora', 'success')
+            return redirect(url_for('main.authors'))
     
     return render_template(
         'author_form.html',
@@ -229,7 +229,7 @@ def author_edit(author_id):
             author.date_of_death=form.date_of_death.data
             db.session.commit()
 
-            flash('Zmieniono wpis autora', 'success')
+            return redirect(url_for('main.author_profile', author_id=author.id))
     
     return render_template(
         'author_form.html',
@@ -288,16 +288,13 @@ def book_add():
         return redirect(url_for('main.wrong_access'))
 
     form = BookForm()
-    # author_list = Author.query.order_by(Author.name).all()
-    # form.author.choices = [(author.id, f'{author.name} - ({author.date_of_birth.year} - {author.date_of_death.year if author.date_of_death else "____"})') for author in author_list]
-    # form.author.choices.insert(len(author_list), ('new_author', 'Dodaj wpis nowego autora'))
-    # form.categories.choices = [(category.id, category.name) for category in Category.query.order_by(Category.name).all()]
     
     if form.validate_on_submit():
         existing_isbn = Book.query.filter_by(isbn=form.isbn.data).first()
         
         if existing_isbn:
             flash('Numer ISBN istnieje już w bazie danych', 'danger')
+            
         else:
             if form.author.data or (form.name.data and form.date_of_birth.data):
                 existing_author = Author.query.filter_by(name=form.name.data).first()
@@ -313,6 +310,7 @@ def book_add():
                             date_of_death=form.date_of_death.data
                         )   
                         db.session.add(author)
+                    
                     new_book = Book(
                         isbn=form.isbn.data, 
                         title=form.title.data,
@@ -323,17 +321,69 @@ def book_add():
                     new_book.categories.extend(form.categories.data)
                     db.session.add(new_book)
                     db.session.commit()
-                    if form.author.data:
-                        flash('Dodano wpis nowej ksiazki', 'success')
-                    else:
-                        flash('Dodano wpis nowej ksiazki i autora', 'success')
-                                        
+
+                    return redirect(url_for('main.books'))
+
             else:
                 flash('Wybierz lub dodaj poprawnie nowego autora', 'danger')
     
     return render_template(
         'book_form.html',
         form=form,
+        )
+
+
+@main.route('/book_edit/<int:book_id>', methods=['GET', 'POST'])
+@login_required
+def book_edit(book_id):
+    
+    if current_user.status.name != UserType.Admin.name:
+    
+        return redirect(url_for('main.wrong_access'))
+
+    book = Book.query.get_or_404(book_id)
+
+    form = BookForm(obj=book)
+    
+    if form.validate_on_submit():    
+        existing_isbn = Book.query.filter_by(isbn=form.isbn.data).first()
+        
+        if existing_isbn and existing_isbn != book:
+            flash('Numer ISBN istnieje już w bazie danych', 'danger')
+
+        else:
+            if form.author.data or (form.name.data and form.date_of_birth.data):
+                existing_author = Author.query.filter_by(name=form.name.data).first()
+                if existing_author:
+                    flash('Autor istnieje już w bazie danych, wybierz z listy', 'warning')
+                else:
+                    if form.author.data:
+                        author = form.author.data
+                    else:
+                        author = Author(
+                            name=form.name.data,
+                            date_of_birth=form.date_of_birth.data,
+                            date_of_death=form.date_of_death.data
+                        )   
+                        db.session.add(author)
+                    
+                    book.isbn=form.isbn.data, 
+                    book.title=form.title.data,
+                    book.description=form.description.data,
+                    book.copies=form.copies.data,
+                    book.author=author
+                    book.categories.extend(form.categories.data)
+                    db.session.commit()
+
+                    return redirect(url_for('main.book_profile', book_id=book.id))
+
+            else:
+                flash('Wybierz lub dodaj poprawnie nowego autora', 'danger')
+    
+    return render_template(
+        'book_form.html',
+        form=form,
+        book=book
         )
 
 
@@ -348,32 +398,32 @@ def book_profile(book_id):
         )
 
 
-@main.route('/book_edit/<int:book_id>')
-@login_required
-def book_edit(book_id):
-    # user = User.query.get_or_404(current_user.id)
-    # actuall_loan = Books_Users.query.filter_by(user=user, return_date=None).order_by(Books_Users.loan_date.asc()).all()
-    
-    # return render_template(
-    #     'profile.html',
-    #     user=user,
-    #     actuall_loan=actuall_loan
-    #     )
-    return render_template('index.html')
-
-
-@main.route('/book_delete/<int:book_id>')
+@main.route('/book_delete/<int:book_id>', methods=['GET', 'POST'])
 @login_required
 def book_delete(book_id):
-    # user = User.query.get_or_404(current_user.id)
-    # actuall_loan = Books_Users.query.filter_by(user=user, return_date=None).order_by(Books_Users.loan_date.asc()).all()
+
+    if current_user.status.name != UserType.Admin.name:
     
-    # return render_template(
-    #     'profile.html',
-    #     user=user,
-    #     actuall_loan=actuall_loan
-    #     )
-    return render_template('index.html')
+        return redirect(url_for('main.wrong_access'))
+    
+    book = Book.query.get_or_404(book_id)
+
+    if request.method == 'POST':
+        if book.borrowed_copies > 0:
+            flash('Książki na wypożyczeniu, poczekaj na zwrot wszystkich', 'danger')
+        else:
+            db.session.delete(book)
+            db.session.commit()
+
+            return redirect(url_for('main.authors'))
+            
+    else:
+        flash('Usuwając profil książki usuwasz historię wypożyczeń', 'warning')
+
+    return render_template(
+        'book_delete.html',
+        book=book
+        )
 
 
 @main.route('/user_loan/<int:user_id>')

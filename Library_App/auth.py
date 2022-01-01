@@ -104,7 +104,7 @@ def user_edit():
 
     if form.validate_on_submit():
         existing_user = User.query.filter_by(email=form.email.data).first()
-        print(existing_user)
+        
         if existing_user == current_user or existing_user is None:
             current_user.first_name = form.first_name.data
             current_user.last_name = form.last_name.data

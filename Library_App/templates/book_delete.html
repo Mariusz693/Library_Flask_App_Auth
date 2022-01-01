@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %} Usuń Profil Książki {% endblock %}
+{% block content %}
+    <div class="container my-container">
+        <div class="mt-4 ml-4 mr-4">
+            <form method="POST">
+                <div class="row border-bottom border-3 my-header-row">
+                    <div class="col-sm-9 mb-2 my-header-col">
+                        <h4 class="color-header">Potwierdz usunięcie profilu książki - "{{ book }}"</h4>
+                    </div>
+                    <div class="col-sm-3 d-flex justify-content-end mb-2 my-header-col">
+                        <button type="submit" class="btn btn-danger my-button">Potwierdz</button>
+                        <a href="{{ url_for('main.book_profile', book_id=book.id) }}" class="btn btn-info my-button">Wstecz</a>
+                    </div>
+                </div>
+            </form>
+            {% for category, message in get_flashed_messages(with_categories=true) %}
+            <div class="row">
+                <div class="col-sm-12 alert alert-{{ category }} text-center my-alert">
+                    {{ message }}
+                    <button type="button" class="btn btn-{{ category }} my-close" data-dismiss="alert">X</button>
+                </div>
+            </div>
+            {% endfor %}
+            <div class="row">
+                <div class="col-9">                        
+                    <div class="row my-row">
+                        <div class="col-sm-4 my-bold-text">Tytuł:</div>
+                        <div class="col-sm-8">{{ book.title }}</div>
+                    </div>
+                    <div class="row my-row">
+                        <div class="col-sm-4 my-bold-text">Numer ISBN:</div>
+                        <div class="col-sm-8">{{ book.isbn }}</div>
+                    </div>
+                    <div class="row my-row">
+                        <div class="col-sm-4 my-bold-text">Autor:</div>
+                        <div class="col-sm-8">{{ book.author }}</div>
+                    </div>
+                    <div class="row my-row">
+                        <div class="col-sm-4 my-bold-text">Opis:</div>
+                        <div class="col-sm-8">{{ book.description }}</div>
+                    </div>
+                    <div class="row my-row">
+                        <div class="col-sm-4 my-bold-text">Kategorie:</div>
+                        <div class="col-sm-8">{{ book.categories|join(", ") }}</div>
+                    </div>
+                    <div class="row my-row">
+                        <div class="col-sm-4 my-bold-text">Ilość egrzemplarzy:</div>
+                        <div class="col-sm-8">{{ book.copies }}</div>
+                    </div>
+                    <div class="row my-row">
+                        <div class="col-sm-4 my-bold-text">Wypożyczone:</div>
+                        <div class="col-sm-8">{{ book.borrowed_copies }}</div>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <img class="rounded mx-auto d-block img-thumbnail" 
+                    src="{{ url_for('static', filename='images/book_profile.jpg') }}" alt="Book profile photo">
+                </div>
+            </div>
+        </div>                
+    </div>
+{% endblock content %}
