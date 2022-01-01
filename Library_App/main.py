@@ -337,9 +337,62 @@ def book_add():
         )
 
 
+@main.route('/book_profile/<int:book_id>')
+def book_profile(book_id):
+
+    book = Book.query.get_or_404(book_id)
+    
+    return render_template(
+        'book_profile.html',
+        book=book
+        )
+
+
+@main.route('/book_edit/<int:book_id>')
+@login_required
+def book_edit(book_id):
+    # user = User.query.get_or_404(current_user.id)
+    # actuall_loan = Books_Users.query.filter_by(user=user, return_date=None).order_by(Books_Users.loan_date.asc()).all()
+    
+    # return render_template(
+    #     'profile.html',
+    #     user=user,
+    #     actuall_loan=actuall_loan
+    #     )
+    return render_template('index.html')
+
+
+@main.route('/book_delete/<int:book_id>')
+@login_required
+def book_delete(book_id):
+    # user = User.query.get_or_404(current_user.id)
+    # actuall_loan = Books_Users.query.filter_by(user=user, return_date=None).order_by(Books_Users.loan_date.asc()).all()
+    
+    # return render_template(
+    #     'profile.html',
+    #     user=user,
+    #     actuall_loan=actuall_loan
+    #     )
+    return render_template('index.html')
+
+
 @main.route('/user_loan/<int:user_id>')
 @login_required
 def user_loan(user_id):
+    # user = User.query.get_or_404(current_user.id)
+    # actuall_loan = Books_Users.query.filter_by(user=user, return_date=None).order_by(Books_Users.loan_date.asc()).all()
+    
+    # return render_template(
+    #     'profile.html',
+    #     user=user,
+    #     actuall_loan=actuall_loan
+    #     )
+    return render_template('index.html')
+
+
+@main.route('/book_loan/<int:book_id>')
+@login_required
+def book_loan(book_id):
     # user = User.query.get_or_404(current_user.id)
     # actuall_loan = Books_Users.query.filter_by(user=user, return_date=None).order_by(Books_Users.loan_date.asc()).all()
     

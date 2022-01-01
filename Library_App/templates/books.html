@@ -46,7 +46,7 @@
                         <td class="col-sm-1 text-center">{{ book.copies }}</td>
                         <td class="col-sm-1 text-center">{{ book.borrowed_copies }}</td>
                         <td class="col-sm-1 text-center">
-                            <a href="/details_book/{{ book.id }}/" class="my-link">Zobacz</a>
+                            <a href="{{ url_for('main.book_profile', book_id=book.id) }}" class="my-link">Profil</a>
                         </td>
                     </tr>
                     {% else %}

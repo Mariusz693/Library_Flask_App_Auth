@@ -5,7 +5,7 @@
         <div class="mt-4 ml-4 mr-4">
             <div class="row border-bottom border-3 my-header-row">
                 <div class="col-sm-9 mb-2 my-header-col">
-                    <h4 class="color-header">Szczegóły profilu autora - {{ author }}</h4>
+                    <h4 class="color-header">Profil autora - {{ author }}</h4>
                 </div>
                 <div class="col-sm-3 d-flex justify-content-end mb-2 my-header-col">
                     {% if current_user.is_authenticated and current_user.status.name == "Admin" %}
@@ -37,7 +37,7 @@
                                     {% for book in author.books %}
                                     <div class="col-sm-6">
                                         <li class="my-list">
-                                            <a href="/details_book/{{ book.id }}/" class="my-link">"{{ book.title }}"</a>
+                                            <a href="{{ url_for('main.book_profile', book_id=book.id) }}" class="my-link">"{{ book.title }}"</a>
                                         </li>
                                     </div>
                                     {% endfor %}
