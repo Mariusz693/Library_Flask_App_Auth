@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% block title %} 
+{% if book %}
+Edytuj książkę
+{% else %}
+Dodaj książkę
+{% endif %}
+{% endblock %}
+{% block content %}
+    <div class="container my-container">
+        <div class="mt-4 ml-4 mr-4">
+            <form method="POST">
+                {{ form.csrf_token }}
+                {% if book %}
+                <div class="row border-bottom border-3 my-header-row">
+                    <div class="col-sm-9 mb-2 my-header-col">
+                        <h4 class="color-header">Edytuj wpis książki - {{ book }}</h4>
+                    </div>
+                    <div class="col-sm-3 d-flex justify-content-end mb-2 my-header-col">
+                        {{ form.submit(class="btn btn-success my-button") }}
+                        <a href="{{ url_for('main.book_profile', book_id=book.id) }}" class="btn btn-info my-button">Wstecz</a>
+                    </div>
+                </div>
+                {% else %}
+                <div class="row border-bottom border-3 my-header-row">
+                    <div class="col-sm-9 mb-2 my-header-col">
+                        <h4 class="color-header">Dodaj wpis nowej książki</h4>
+                    </div>
+                    <div class="col-sm-3 d-flex justify-content-end mb-2 my-header-col">
+                        {{ form.submit(class="btn btn-success my-button") }}
+                        <a href="{{ url_for('main.index') }}" class="btn btn-info my-button">Anuluj</a>
+                    </div>
+                </div>
+                {% endif %}
+                {% for category, message in get_flashed_messages(with_categories=true) %}
+                <div class="row">
+                    <div class="col-sm-12 alert alert-{{ category }} text-center my-alert">
+                        {{ message }}
+                        <button type="button" class="btn btn-{{ category }} my-close" data-dismiss="alert">X</button>
+                    </div>
+                </div>
+                {% endfor %}
+                <div class="form-group row">
+                    <div class="col-sm-8 my-input-area">
+                        {{ form.title.label(class="label-size col-form-label my-bold-text") }}
+                        {{ form.title(class="form-control") }}
+                        {% if form.title.errors %}
+                        <ul>
+                            {% for error in form.name.errors %}
+                            <li class="my-error">{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                    </div>
+                    <div class="col-sm-4 my-input-area">
+                        {{ form.isbn.label(class="label-size col-form-label my-bold-text") }}
+                        {{ form.isbn(class="form-control") }}
+                        {% if form.isbn.errors %}
+                        <ul>
+                            {% for error in form.isbn.errors %}
+                            <li class="my-error">{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-sm-12 my-input-area">
+                        {{ form.description.label(class="label-size col-form-label my-bold-text") }}
+                        {{ form.description(class="form-control", rows="5") }}
+                        {% if form.description.errors %}
+                        <ul>
+                            {% for error in form.description.errors %}
+                            <li class="my-error">{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-sm-8 my-input-area">
+                        {{ form.author.label(class="label-size col-form-label my-bold-text") }}
+                        {{ form.author(class="form-control") }}
+                        {% if form.author.errors %}
+                        <ul>
+                            {% for error in form.author.errors %}
+                            <li class="my-error">{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                    </div>
+                    <div class="col-sm-4 d-flex my-input-area my-button-area">
+                        <button type="button" class="btn btn-info" id="my-button-author">Dodaj</button>
+                    </div>
+                </div>
+                <div class="form-group row my-display-none" id="author_add">
+                    <div class="col-sm-6 my-input-area">
+                        {{ form.name.label(class="label-size col-form-label my-bold-text") }}
+                        {{ form.name(class="form-control") }}
+                        {% if form.name.errors %}
+                        <ul>
+                            {% for error in form.name.errors %}
+                            <li class="my-error">{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                    </div>
+                    <div class="col-sm-3 my-input-area">
+                        {{ form.date_of_birth.label(class="label-size col-form-label my-bold-text") }}
+                        {{ form.date_of_birth(class="form-control") }}
+                        {% if form.date_of_birth.errors %}
+                        <ul>
+                            {% for error in form.date_of_birth.errors %}
+                            <li class="my-error">{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                    </div>
+                    <div class="col-sm-3 my-input-area">
+                        {{ form.date_of_death.label(class="label-size col-form-label my-bold-text") }}
+                        {{ form.date_of_death(class="form-control") }}
+                        {% if form.date_of_death.errors %}
+                        <ul>
+                            {% for error in form.date_of_death.errors %}
+                            <li class="my-error">{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-sm-8 my-input-area">
+                        {{ form.copies.label(class="label-size col-form-label my-bold-text") }}
+                        {{ form.copies(class="form-control") }}
+                        {% if form.copies.errors %}
+                        <ul>
+                            {% for error in form.copies.errors %}
+                            <li class="my-error">{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-sm-12 my-input-area">
+                        {{ form.categories.label(class="label-size col-form-label my-bold-text") }}
+                        {{ form.categories(class="form-control my-ul") }}
+                        {% if form.categories.errors %}
+                        <ul>
+                            {% for error in form.categories.errors %}
+                            <li class="my-error">{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div>                
+            <img class="rounded mx-auto d-block img-thumbnail my-style" 
+            src="{{ url_for('static', filename='images/author_form.jpg') }}" alt="Author form photo">
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/book_add.js') }}"></script>
+{% endblock content %}

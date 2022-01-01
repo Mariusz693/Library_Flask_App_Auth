@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_required, current_user
-from .models import UserType, db, Book, Author, User, Books_Users
-from .forms import UserStatusForm, AuthorForm
+from .models import Category, UserType, db, Book, Author, User, Books_Users
+from .forms import UserStatusForm, AuthorForm, BookForm
 
 main = Blueprint(
     'main', __name__,
@@ -186,10 +186,6 @@ def author_add():
 
             flash('Autor istnieje już w bazie danych', 'danger')
 
-        elif form.date_of_death.data and form.date_of_death.data < form.date_of_birth.data:
-        
-            flash('Data urodzenia autora nie może być większa od daty śmierci', 'danger')
-
         else:
             new_author = Author(
                 name=form.name.data,
@@ -226,10 +222,6 @@ def author_edit(author_id):
         if existing_author and existing_author != author:
 
             flash('Autor istnieje już w bazie danych', 'danger')
-
-        elif form.date_of_death.data and form.date_of_death.data < form.date_of_birth.data:
-        
-            flash('Data urodzenia autora nie może być większa od daty śmierci', 'danger')
 
         else:
             author.name=form.name.data,
@@ -284,6 +276,64 @@ def author_delete(author_id):
     return render_template(
         'author_delete.html',
         author=author
+        )
+
+
+@main.route('/book_add', methods=['GET', 'POST'])
+@login_required
+def book_add():
+    
+    if current_user.status.name != UserType.Admin.name:
+    
+        return redirect(url_for('main.wrong_access'))
+
+    form = BookForm()
+    # author_list = Author.query.order_by(Author.name).all()
+    # form.author.choices = [(author.id, f'{author.name} - ({author.date_of_birth.year} - {author.date_of_death.year if author.date_of_death else "____"})') for author in author_list]
+    # form.author.choices.insert(len(author_list), ('new_author', 'Dodaj wpis nowego autora'))
+    # form.categories.choices = [(category.id, category.name) for category in Category.query.order_by(Category.name).all()]
+    
+    if form.validate_on_submit():
+        existing_isbn = Book.query.filter_by(isbn=form.isbn.data).first()
+        
+        if existing_isbn:
+            flash('Numer ISBN istnieje już w bazie danych', 'danger')
+        else:
+            if form.author.data or (form.name.data and form.date_of_birth.data):
+                existing_author = Author.query.filter_by(name=form.name.data).first()
+                if existing_author:
+                    flash('Autor istnieje już w bazie danych, wybierz z listy', 'warning')
+                else:
+                    if form.author.data:
+                        author = form.author.data
+                    else:
+                        author = Author(
+                            name=form.name.data,
+                            date_of_birth=form.date_of_birth.data,
+                            date_of_death=form.date_of_death.data
+                        )   
+                        db.session.add(author)
+                    new_book = Book(
+                        isbn=form.isbn.data, 
+                        title=form.title.data,
+                        description=form.description.data,
+                        copies=form.copies.data,
+                        author=author
+                        )
+                    new_book.categories.extend(form.categories.data)
+                    db.session.add(new_book)
+                    db.session.commit()
+                    if form.author.data:
+                        flash('Dodano wpis nowej ksiazki', 'success')
+                    else:
+                        flash('Dodano wpis nowej ksiazki i autora', 'success')
+                                        
+            else:
+                flash('Wybierz lub dodaj poprawnie nowego autora', 'danger')
+    
+    return render_template(
+        'book_form.html',
+        form=form,
         )
 
 

@@ -12,7 +12,7 @@
                     <div class="col-sm-3 d-flex justify-content-end mb-2 my-header-col">
                         <h5 class="color-header">{{ user.status.value }}</h5>
                         <button type="submit" class="btn btn-danger my-button">Potwierdź</button>
-                        <a href="{{ url_for('main.user_profile', user_id=user.id ) }}" class="btn btn-info my-button">Anuluj</a>
+                        <a href="{{ url_for('main.user_profile', user_id=user.id ) }}" class="btn btn-info my-button">Wstecz</a>
                     </div>
                     {% else %}
                     <div class="col-sm-9 mb-2 my-header-col">
@@ -21,7 +21,7 @@
                     <div class="col-sm-3 d-flex justify-content-end mb-2 my-header-col">
                         <h5 class="color-header">{{ user.status.value }}</h5>
                         <button type="submit" class="btn btn-danger my-button">Potwierdź</button>
-                        <a href="{{ url_for('auth.profile') }}" class="btn btn-info my-button">Anuluj</a>
+                        <a href="{{ url_for('auth.profile') }}" class="btn btn-info my-button">Wstecz</a>
                     </div>
                     {% endif %}
                 </div>

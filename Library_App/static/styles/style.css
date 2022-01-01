@@ -87,10 +87,6 @@ div.my-bold-text {
     font-weight: bold;
 }
 
-input[type=checkbox] {
-    transform: scale(1.25);
-}
-
 input.my-search-input {
     max-width: 300px;
 }
@@ -132,4 +128,21 @@ div.my-header-row {
 
 div.my-header-col {
     align-items: baseline;
+}
+
+div.my-display-none {
+    display: none;
+}
+
+ul.my-ul {
+    padding-left: 30px;
+}
+
+input[type=checkbox] {
+    transform: scale(1.25);
+    margin: 7.5px 5px 7.5px 5px;
+}
+
+div.my-button-area {
+    align-items: flex-end;
 }

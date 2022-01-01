@@ -1,31 +1,32 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
-from wtforms.fields.choices import SelectField
-from wtforms.fields.datetime import DateField
-from wtforms.validators import DataRequired, Regexp, Email, EqualTo, Length, ValidationError, Optional
-from .models import UserType
-from datetime import datetime
+from wtforms import StringField, PasswordField, SubmitField, SelectField, DateField, IntegerField, TextAreaField, SelectMultipleField
+from wtforms import widgets
+from wtforms.validators import DataRequired, Regexp, Email, EqualTo, Length, Optional, NumberRange
+from .models import Category, UserType, Author
+from .validators import EqualDateTo, DateRange
+from wtforms_sqlalchemy.fields import QuerySelectField
+from wtforms_sqlalchemy.fields import QueryCheckboxField
 
 
 class LoginForm(FlaskForm):
     """User Login Form."""
     email = StringField(
-        'Email: *',
+        label='Email: *',
         validators=[
             DataRequired(message='Pole obowiązkowe.'),
             Email(message='Nie poprawny adres email.')
         ]
     )
-    password = PasswordField('Hasło: *', validators=[DataRequired(message='Pole obowiązkowe.')])
+    password = PasswordField(label='Hasło: *', validators=[DataRequired(message='Pole obowiązkowe.')])
     submit = SubmitField('Zaloguj')
 
 
 class UserRegisterForm(FlaskForm):
     """User Register Form."""
-    first_name = StringField('Imię: *', validators=[DataRequired(message='Pole obowiązkowe.')])
-    last_name = StringField('Nazwisko: *', validators=[DataRequired(message='Pole obowiązkowe.')])
+    first_name = StringField(label='Imię: *', validators=[DataRequired(message='Pole obowiązkowe.')])
+    last_name = StringField(label='Nazwisko: *', validators=[DataRequired(message='Pole obowiązkowe.')])
     email = StringField(
-        'Email: *',
+        label='Email: *',
         validators=[
             DataRequired(message='Pole obowiązkowe.'),
             Length(min=6, message='Adres email zbyt krótki.'),
@@ -33,7 +34,7 @@ class UserRegisterForm(FlaskForm):
         ]
     )
     phone_number = StringField(
-        'Numer telefonu (+48..):',
+        label='Numer telefonu (+48..):',
         validators=[
             Optional(),
             Length(min=9, max=9, message='Numer telefonu musi być 9 cyfrowy.'),
@@ -41,14 +42,14 @@ class UserRegisterForm(FlaskForm):
         ]
     )
     password = PasswordField(
-        'Hasło: *',
+        label='Hasło: *',
         validators=[
             DataRequired(message='Pole obowiązkowe.'),
             Length(min=8, message='Wpisz mocniejsze hasło.')
         ]
     )
     repeat_password = PasswordField(
-        'Powtórz hasło: *',
+        label='Powtórz hasło: *',
         validators=[
             DataRequired(message='Pole obowiązkowe.'),
             EqualTo('password', message='Hasła muszą być identyczne.')
@@ -59,10 +60,10 @@ class UserRegisterForm(FlaskForm):
 
 class UserEditForm(FlaskForm):
     """User Edit Profile Form."""
-    first_name = StringField('Imię: *', validators=[DataRequired(message='Pole obowiązkowe.')])
-    last_name = StringField('Nazwisko: *', validators=[DataRequired(message='Pole obowiązkowe.')])
+    first_name = StringField(label='Imię: *', validators=[DataRequired(message='Pole obowiązkowe.')])
+    last_name = StringField(label='Nazwisko: *', validators=[DataRequired(message='Pole obowiązkowe.')])
     email = StringField(
-        'Email: *',
+        label='Email: *',
         validators=[
             DataRequired(message='Pole obowiązkowe.'),
             Length(min=6, message='Adres email zbyt krótki.'),
@@ -70,7 +71,7 @@ class UserEditForm(FlaskForm):
         ]
     )
     phone_number = StringField(
-        'Numer telefonu (+48..):',
+        label='Numer telefonu (+48..):',
         validators=[
             Optional(),
             Length(min=9, max=9, message='Numer telefonu musi być 9 cyfrowy.'),
@@ -82,16 +83,16 @@ class UserEditForm(FlaskForm):
 
 class UserPasswordForm(FlaskForm):
     """User Password Check Form."""
-    password = PasswordField('Hasło: *', validators=[DataRequired(message='Pole obowiązkowe.')])
+    password = PasswordField(label='Hasło: *', validators=[DataRequired(message='Pole obowiązkowe.')])
     new_password = PasswordField(
-        'Nowe hasło: *',
+        label='Nowe hasło: *',
         validators=[
             DataRequired(message='Pole obowiązkowe.'),
             Length(min=8, message='Wpisz mocniejsze hasło.')
         ]
     )
     repeat_new_password = PasswordField(
-        'Powtórz nowe hasło: *',
+        label='Powtórz nowe hasło: *',
         validators=[
             DataRequired(message='Pole obowiązkowe.'),
             EqualTo('new_password', message='Hasła muszą być identyczne.')
@@ -103,29 +104,100 @@ class UserPasswordForm(FlaskForm):
 class UserStatusForm(FlaskForm):
 
     status = SelectField(
-        'Wybierz status użytkownika:', 
+        label='Wybierz status użytkownika:', 
         choices=[(item.name, item.value) for item in UserType],
         validators=[DataRequired(message='Pole obowiązkowe.')]
     )
     submit = SubmitField('Zapisz')
 
 
-def my_data_check(form, field):
-    today = datetime.now().date()
-    if field.data > today:
-        raise ValidationError('Podano datę przyszłą.')
-
-
-
 class AuthorForm(FlaskForm):
     """Author Add or Edit Form."""
-    name = StringField('Imię i nazwisko (pseudonim): *', validators=[DataRequired(message='Pole obowiązkowe.')])
+    name = StringField(label='Imię i nazwisko (pseudonim): *', validators=[DataRequired(message='Pole obowiązkowe.')])
     date_of_birth = DateField(
-        'Data urodzenia: *',
-        validators=[DataRequired(message='Pole obowiązkowe.'), my_data_check] 
+        label='Data urodzenia: *',
+        validators=[
+            DataRequired(message='Pole obowiązkowe.'),
+            DateRange(message='Data nie może być datą przyszłą.') 
+        ] 
     )
     date_of_death = DateField(
-        'Data śmierci:',
-        validators=[Optional(), my_data_check]
+        label='Data śmierci:',
+        validators=[
+            Optional(), 
+            EqualDateTo('date_of_birth', message='Data śmierci nie może być mniejsza niż urodzenia'), 
+            DateRange(message='Data nie może być datą przyszłą.') 
+        ]
+    )
+    submit = SubmitField('Zapisz')
+
+
+class MultiCheckboxField(SelectMultipleField):
+    widget = widgets.ListWidget(prefix_label=False)
+    option_widget = widgets.CheckboxInput()
+
+
+class BookForm(FlaskForm):
+    """Book Add or Edit Form."""
+
+    def query_choices_authors():
+
+        return Author.query.order_by(Author.name).all()
+    
+    def query_choices_categories():
+
+        return Category.query.order_by(Category.name).all()
+    
+    title = StringField('Tytuł: *', validators=[DataRequired(message='Pole obowiązkowe.')])
+    isbn = StringField(
+        label='Numer ISBN: *', 
+        validators=[
+            DataRequired(message='Pole obowiązkowe.'),
+            Length(min=13, max=13, message='Numer ISBN musi być 13-to cyfrowy'),
+            Regexp('^[0-9]*$' , message='Numer ISBN musi się składać tylko z cyfr.')
+        ]
+    )
+    description = TextAreaField(label='Opis:', validators=[Optional()])
+    copies = IntegerField(
+        label='Ilość egzemplarzy: *',
+        default=1,
+        validators=[
+            DataRequired(message='Pole obowiązkowe.'),
+            NumberRange(min=1, message='Minimalna ilość egzemplarzy to jeden')
+        ]
+    )
+    author = QuerySelectField(
+        label='Wybierz autora lub dodaj nowego: *',
+        query_factory=query_choices_authors,
+        allow_blank=True,
+        blank_text='Wybierz',
+    )
+    name = StringField('Imię i nazwisko (pseudonim): *', validators=[Optional()])
+    date_of_birth = DateField(
+        label='Data urodzenia: *',
+        validators=[
+            Optional(), 
+            DateRange(message='Data nie może być datą przyszłą.') 
+        ] 
+    )
+    date_of_death = DateField(
+        label='Data śmierci:',
+        validators=[
+            Optional(), 
+            EqualDateTo('date_of_birth', message='Data śmierci nie może być mniejsza niż urodzenia'), 
+            DateRange(message='Data nie może być datą przyszłą.') 
+        ]
     ) 
+    # categories = MultiCheckboxField(
+    #     label='Wybierz kategorie:',
+    #     choices=[],
+    #     validators=[Optional()],
+    #     coerce=int
+    # )
+    categories = QueryCheckboxField(
+        label='Wybierz kategorie:',
+        query_factory=query_choices_categories,
+        validators=[Optional()],
+    )
+    
     submit = SubmitField('Zapisz')
