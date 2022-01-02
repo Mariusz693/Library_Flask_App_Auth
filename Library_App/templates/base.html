@@ -37,7 +37,7 @@
                                 <a class="nav-link dropdown-toggle active" href="#" id="navbarDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Dodaj</a>
                                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="/add_loan/">Wypożyczenie</a>
+                                    <a class="dropdown-item" href="{{ url_for('main.loan_add') }}">Wypożyczenie</a>
                                     <div class="dropdown-divider"></div>
                                     <a class="dropdown-item" href="{{ url_for('main.book_add') }}">Nowa książka</a>
                                     <a class="dropdown-item" href="{{ url_for('main.author_add') }}">Nowy autor</a>

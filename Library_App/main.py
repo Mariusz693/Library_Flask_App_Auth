@@ -1,7 +1,8 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_required, current_user
-from .models import Category, UserType, db, Book, Author, User, Books_Users
-from .forms import UserStatusForm, AuthorForm, BookForm
+from datetime import datetime
+from .models import UserType, db, Book, Author, User, Books_Users
+from .forms import UserStatusForm, AuthorForm, BookForm, LoanForm
 
 main = Blueprint(
     'main', __name__,
@@ -423,6 +424,78 @@ def book_delete(book_id):
     return render_template(
         'book_delete.html',
         book=book
+        )
+
+
+@main.route('/loan_add', methods=['GET', 'POST'])
+@login_required
+def loan_add():
+    
+    if current_user.status.name != UserType.Admin.name:
+    
+        return redirect(url_for('main.wrong_access'))
+
+    form = LoanForm()
+    today_date = datetime.now().date()
+    
+    if form.validate_on_submit():
+        book = form.book.data
+        user = form.user.data
+        existing_loan = Books_Users.query.filter_by(book=book).filter_by(user=user).filter_by(return_date=None).first()
+        if existing_loan:
+            flash('Użytkownik ma aktulanie tą książkę na wypożyczeniu', 'danger')
+
+        else:
+            new_loan = Books_Users(
+                book=book,
+                user=user,
+                loan_date=today_date
+            )
+            db.session.add(new_loan)
+            book.borrowed_copies += 1
+            db.session.commit()
+
+            flash(f'Dodano wypożyczenie książki "{book}" - {user}', 'success')
+    
+    return render_template(
+        'loan_form.html',
+        form=form,
+        today_date=today_date
+        )
+
+
+@main.route('/loan_return/<int:loan_id>', methods=['GET', 'POST'])
+@login_required
+def loan_return(loan_id):
+    
+    if current_user.status.name != UserType.Admin.name:
+    
+        return redirect(url_for('main.wrong_access'))
+
+    loan = Books_Users.query.get_or_404(loan_id)
+    today_date = datetime.now().date()
+    next = request.args.get('next')
+
+    if request.method == 'POST':
+        if today_date < loan.loan_date:
+            flash('Błąd daty zwrotu - spróbuj ponownie', 'danger')
+
+        elif loan.return_date is not None:
+            flash(f'Książka została już zwrócona w dniu {loan.return_date.strftime("%d.%m.%Y")}', 'danger')
+        
+        else:           
+            loan.return_date = today_date
+            loan.book.borrowed_copies -= 1
+            db.session.commit()
+
+            # return redirect(next)
+        
+            return redirect(url_for('main.index'))
+    
+    return render_template(
+        'loan_return.html',
+        loan=loan,
+        today_date=today_date
         )
 
 

@@ -1,8 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, SelectField, DateField, IntegerField, TextAreaField, SelectMultipleField
-from wtforms import widgets
+from wtforms import StringField, PasswordField, SubmitField, SelectField, DateField, IntegerField, TextAreaField
 from wtforms.validators import DataRequired, Regexp, Email, EqualTo, Length, Optional, NumberRange
-from .models import Category, UserType, Author
+from .models import Category, UserType, Author, Book, User
 from .validators import EqualDateTo, DateRange
 from wtforms_sqlalchemy.fields import QuerySelectField
 from wtforms_sqlalchemy.fields import QueryCheckboxField
@@ -132,11 +131,6 @@ class AuthorForm(FlaskForm):
     submit = SubmitField('Zapisz')
 
 
-class MultiCheckboxField(SelectMultipleField):
-    widget = widgets.ListWidget(prefix_label=False)
-    option_widget = widgets.CheckboxInput()
-
-
 class BookForm(FlaskForm):
     """Book Add or Edit Form."""
 
@@ -187,17 +181,40 @@ class BookForm(FlaskForm):
             EqualDateTo('date_of_birth', message='Data śmierci nie może być mniejsza niż urodzenia'), 
             DateRange(message='Data nie może być datą przyszłą.') 
         ]
-    ) 
-    # categories = MultiCheckboxField(
-    #     label='Wybierz kategorie:',
-    #     choices=[],
-    #     validators=[Optional()],
-    #     coerce=int
-    # )
+    )
     categories = QueryCheckboxField(
         label='Wybierz kategorie:',
         query_factory=query_choices_categories,
         validators=[Optional()],
     )
+    submit = SubmitField('Zapisz')
+
+
+class LoanForm(FlaskForm):
+    """Loan Book Form."""
+
+    def query_choices_books():
+
+        books = Book.query.order_by(Book.title).all()
+
+        return [book for book in books if book.copies > book.borrowed_copies]
     
+    def query_choices_users():
+
+        return User.query.order_by(User.last_name).all()
+    
+    book = QuerySelectField(
+        label='Wybierz książkę: *',
+        query_factory=query_choices_books,
+        allow_blank=True,
+        blank_text='Wybierz',
+        validators=[DataRequired(message='Pole obowiązkowe.')]
+    )
+    user = QuerySelectField(
+        label='Wybierz użytkownika: *',
+        query_factory=query_choices_users,
+        allow_blank=True,
+        blank_text='Wybierz',
+        validators=[DataRequired(message='Pole obowiązkowe.')]
+    )
     submit = SubmitField('Zapisz')
