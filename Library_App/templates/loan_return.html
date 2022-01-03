@@ -10,7 +10,7 @@
                     </div>
                     <div class="col-sm-3 d-flex justify-content-end mb-2 my-header-col">
                         <button type="submit" class="btn btn-success my-button">Potwierdz</button>
-                        <a href="{{ url_for('main.index') }}" class="btn btn-info my-button">Anuluj</a>
+                        <a href="{{ request.args.get('next') }}" class="btn btn-info my-button">Anuluj</a>
                     </div>
                 </div>
                 {% for category, message in get_flashed_messages(with_categories=true) %}
@@ -22,8 +22,8 @@
                 </div>
                 {% endfor %}
                 <div class="form-group row">
-                    <div class="col-sm-3"></div>
-                    <div class="col-sm-6 my-input-area">
+                    <div class="col-sm-2"></div>
+                    <div class="col-sm-8 my-input-area">
                         <div class="row">
                             <div class="col-sm-6 mb-2 my-bold-text">Dzisiejsza data:</div>
                             <div class="col-sm-6 d-flex justify-content-end mb-2 my-bold-text">
@@ -31,11 +31,11 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-3"></div>
+                    <div class="col-sm-2"></div>
                 </div>
                 <div class="form-group row">
-                    <div class="col-sm-3"></div>
-                    <div class="col-sm-6 my-input-area">
+                    <div class="col-sm-2"></div>
+                    <div class="col-sm-8 my-input-area">
                         <div class="row">
                             <div class="col-sm-6 mb-2 my-bold-text">Książka:</div>
                             <div class="col-sm-6 d-flex justify-content-end mb-2">
@@ -55,7 +55,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-3"></div>
+                    <div class="col-sm-2"></div>
                 </div>
             </form>
         </div>

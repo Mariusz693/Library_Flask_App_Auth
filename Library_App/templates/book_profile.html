@@ -47,11 +47,13 @@
                         <div class="col-sm-4 my-bold-text">Wypożyczone:</div>
                         <div class="col-sm-8">{{ book.borrowed_copies }}</div>
                     </div>
+                    {% if current_user.is_authenticated and current_user.status.name == "Admin" %}
                     <div class="row my-row">
                         <div class="col-sm-12">
-                            <a href="{{ url_for('main.book_loan', book_id=book.id) }}" class="btn btn-info">Historia wypożyczeń</a>
+                            <a href="{{ url_for('main.loan_book', book_id=book.id) }}" class="btn btn-info">Historia wypożyczeń</a>
                         </div>
                     </div>
+                    {% endif %}
                 </div>
                 <div class="col-3">
                     <img class="rounded mx-auto d-block img-thumbnail" 

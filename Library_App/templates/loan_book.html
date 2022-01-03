@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %} Historia wypożyczeń {% endblock %}
+{% block content %}
+    <div class="container my-container">
+        <div class="mt-4 ml-4 mr-4">
+            <form action="{{ url_for('main.loan_book', book_id=book.id) }}" method="POST">
+                <div class="row border-bottom border-3 my-header-row">
+                    <div class="col-sm-9 mb-2 my-header-col">
+                        <h4 class="color-header">Historia wypożyczeń - "{{ book }}"</h4>
+                    </div>
+                    <div class="col-sm-3 d-flex justify-content-end mb-2 my-header-col">
+                        {% if request.args.get('loaned') %}
+                        <a href="{{ url_for('main.loan_book', book_id=book.id) }}" class="btn btn-success my-button">Wszystkie</a>
+                        {% else %}
+                        <a href="{{ url_for('main.loan_book', book_id=book.id) }}?loaned=True" class="btn btn-success my-button">Aktualne</a>
+                        {% endif %}
+                        <button type="submit" class="btn btn-danger my-button">Usuń</button>
+                        <a href="{{ url_for('main.book_profile', book_id=book.id) }}" class="btn btn-info my-button">Powrót</a>
+                    </div>
+                </div>
+                {% for category, message in get_flashed_messages(with_categories=true) %}
+                <div class="row">
+                    <div class="col-sm-12 alert alert-{{ category }} text-center my-alert">
+                        {{ message }}
+                        <button type="button" class="btn btn-{{ category }} my-close" data-dismiss="alert">X</button>
+                    </div>
+                </div>
+                {% endfor %}
+                <div class="row">
+                    <table class="table">
+                        <thead>
+                            <tr class="d-flex flex-wrap">
+                                <th class="col-sm-1">Lp.</th>
+                                <th class="col-sm-5">Imię i Nazwisko</th>
+                                <th class="col-sm-2 text-center">Data Wypożyczenia</th>
+                                <th class="col-sm-2 text-center">Data Zwrotu</th>
+                                <th class="col-sm-2 text-center">Zaznacz do usunięcia</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for loan in loan_list %}
+                            <tr class="d-flex flex-wrap my-table">
+                                <td class="col-sm-1">{{ loop.index }}</td>
+                                <th class="col-sm-5">
+                                    <a href="{{ url_for('main.user_profile', user_id=loan.user.id) }}" class="my-link">{{ loan.user }}</a>
+                                </th>
+                                <td class="col-sm-2 text-center">{{ loan.loan_date.strftime('%d.%m.%Y') }}</td>
+                                <td class="col-sm-2 text-center">
+                                    {% if loan.return_date %} 
+                                        {{ loan.return_date.strftime('%d.%m.%Y') }} 
+                                    {% else %} 
+                                        <a href="{{ url_for('main.loan_return', loan_id=loan.id) }}?next={{ request.path }}" class="my-link">Brak zwrotu !</a> 
+                                    {% endif %}
+                                </td>
+                                <td class="col-sm-2 text-center">
+                                    {% if loan.return_date %} 
+                                    <input type="checkbox" name="loan_delete" value="{{ loan.id }}">
+                                    {% else %}
+                                    <input type="checkbox" name="loan_delete" disabled="disabled" value="{{ loan.id }}">
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr class="d-flex flex-wrap">
+                                <th colspan="5" class="col-sm-12">
+                                    {% if request.args.get('loaned') %}
+                                        Brak aktualnie wypożyczonych egzemplarzy !!!
+                                    {% else %}
+                                        Brak historii wypożyczeń !!!
+                                    {% endif %}
+                                </th>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>                     
+                </div>
+            </form>
+        </div>                
+    </div>
+{% endblock content %}

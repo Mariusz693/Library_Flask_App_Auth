@@ -166,7 +166,10 @@ class BookForm(FlaskForm):
         allow_blank=True,
         blank_text='Wybierz',
     )
-    name = StringField('Imię i nazwisko (pseudonim): *', validators=[Optional()])
+    name = StringField(
+        'Imię i nazwisko (pseudonim): *',
+        validators=[Optional(), Length(min=3, message='Pole obowiązkowe.')]
+    )
     date_of_birth = DateField(
         label='Data urodzenia: *',
         validators=[
