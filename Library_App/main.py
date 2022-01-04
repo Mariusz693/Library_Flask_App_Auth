@@ -90,8 +90,7 @@ def user_profile(user_id):
     return render_template(
         'user_profile.html',
         user=user,
-        actuall_loan=actuall_loan,
-        admin=True
+        actuall_loan=actuall_loan
         )
 
 
@@ -497,18 +496,45 @@ def loan_return(loan_id):
         )
 
 
-@main.route('/user_loan/<int:user_id>')
+@main.route('/loan_user/<int:user_id>', methods=['GET', 'POST'])
 @login_required
-def user_loan(user_id):
-    # user = User.query.get_or_404(current_user.id)
-    # actuall_loan = Books_Users.query.filter_by(user=user, return_date=None).order_by(Books_Users.loan_date.asc()).all()
+def loan_user(user_id):
     
-    # return render_template(
-    #     'profile.html',
-    #     user=user,
-    #     actuall_loan=actuall_loan
-    #     )
-    return render_template('index.html')
+    if current_user.status.name != UserType.Admin.name:
+    
+        return redirect(url_for('main.wrong_access'))
+
+    user = User.query.get_or_404(user_id)
+    loaned = request.args.get('loaned')
+    loan_list = Books_Users.query.filter_by(user=user).order_by(
+        Books_Users.return_date.desc(), Books_Users.loan_date.desc()).all()
+    
+    if loaned == 'True':
+        loan_list = [item for item in loan_list if item.return_date == None]
+        flash('Aktualnie wypożyczone książki', 'success')
+    
+    if request.method == 'POST':
+        loan_delete = request.form.getlist('loan_delete')
+
+        if loan_delete:
+            loan_delete = Books_Users.query.filter(Books_Users.id.in_(loan_delete))
+            for loan in loan_delete:
+                if loan.return_date:
+                    db.session.delete(loan)
+            db.session.commit()
+            
+            flash('Usunięto z historii wypożyczeń książki wybrane pozycje', 'success')
+            loan_list = Books_Users.query.filter_by(user=user).order_by(Books_Users.loan_date.desc(), 
+                Books_Users.return_date.desc()).all()
+
+        else:
+            flash('Brak zaznaczonych pozycji do usunięcia', 'warning')
+    
+    return render_template(
+        'loan_user.html',
+        user=user,
+        loan_list=loan_list,
+        )
 
 
 @main.route('/loan_book/<int:book_id>', methods=['GET', 'POST'])

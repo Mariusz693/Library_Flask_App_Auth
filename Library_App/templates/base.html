@@ -29,9 +29,6 @@
                         <li class="nav-item">
                             <a class="nav-link {% if request.path != url_for('main.users') %} active {% endif %}" href="{{ url_for('main.users') }}">Użytkownicy</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link {% if request.path != '/client_book/' %} active {% endif %}" href="/client_book/">Moje Wypożyczenia</a>
-                        </li>
                         <li class="nav-item dropdown">
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle active" href="#" id="navbarDropdown" role="button"
@@ -48,7 +45,7 @@
                         </li>
                         {% else %}
                         <li class="nav-item">
-                            <a class="nav-link {% if request.path != '/client_book/' %} active {% endif %}" href="/client_book/">Moje Wypożyczenia</a>
+                            <a class="nav-link {% if request.path != url_for('auth.loan_user_logged') %} active {% endif %}" href="{{ url_for('auth.loan_user_logged') }}">Moje Wypożyczenia</a>
                         </li>
                         {% endif %}
                     {% endif %}

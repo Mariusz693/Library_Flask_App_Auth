@@ -5,44 +5,40 @@
         <div class="mt-4 ml-4 mr-4">
             <div class="row border-bottom border-3 my-header-row">
                 <div class="col-sm-9 mb-2 my-header-col">
-                    <h4 class="color-header">Profil Użytkownika - {{ user }}</h4>
+                    <h4 class="color-header">Mój profil</h4>
                 </div>
                 <div class="col-sm-3 d-flex justify-content-end mb-2 my-header-col">
-                    <h5 class="color-header">{{ user.status.value }}</h5>
-                    <a href="{{ url_for('main.user_status', user_id=user.id) }}" class="btn btn-success my-button">Zmień</a>
-                    <a href="{{ url_for('main.user_delete', user_id=user.id) }}" class="btn btn-danger my-button">Usuń</a>
-                    {% if user.status.name == "Admin" %}
-                    <a href="{{ url_for('main.users') }}?status=Admin" class="btn btn-info my-button">Admini</a>
-                    {% else %}
-                    <a href="{{ url_for('main.users') }}" class="btn btn-info my-button">Użytkownicy</a>
-                    {% endif %}
+                    <h5 class="color-header">{{ current_user.status.value }}</h5>
+                    <a href="{{ url_for('auth.user_edit') }}" class="btn btn-success my-button">Edytuj</a>
+                    <a href="{{ url_for('auth.user_password') }}" class="btn btn-success my-button">Hasło</a>
+                    <a href="{{ url_for('auth.user_remove') }}" class="btn btn-danger my-button">Usuń</a>
                 </div>
             </div>
             <div class="row">
                 <div class="col-9">
                     <div class="row my-row">
                         <div class="col-sm-4 my-bold-text">Imię:</div>
-                        <div class="col-sm-8">{{ user.first_name }}</div>
+                        <div class="col-sm-8">{{ current_user.first_name }}</div>
                     </div>
                     <div class="row my-row">
                         <div class="col-sm-4 my-bold-text">Nazwisko:</div>
-                        <div class="col-sm-8">{{ user.last_name }}</div>
+                        <div class="col-sm-8">{{ current_user.last_name }}</div>
                     </div>
                     <div class="row my-row">
                         <div class="col-sm-4 my-bold-text">Adres email:</div>
-                        <div class="col-sm-8">{{ user.email }}</div>
+                        <div class="col-sm-8">{{ current_user.email }}</div>
                     </div>
                     <div class="row my-row">
                         <div class="col-sm-4 my-bold-text">Numer telefonu:</div>
-                        <div class="col-sm-8">{% if user.phone_number %} (+48) {{ user.phone_number }} {% else %} (brak danych) {% endif %}</div>
+                        <div class="col-sm-8">{% if current_user.phone_number %} (+48) {{ current_user.phone_number }} {% else %} (brak danych) {% endif %}</div>
                     </div>
                     <div class="row my-row">
                         <div class="col-sm-4 my-bold-text">Data rejestracji:</div>
-                        <div class="col-sm-8">{{ user.created_on.strftime('%d.%m.%Y, godz. %H:%M:%S') }}</div>
+                        <div class="col-sm-8">{{ current_user.created_on.strftime('%d.%m.%Y, godz. %H:%M:%S') }}</div>
                     </div>
                     <div class="row my-row">
                         <div class="col-sm-4 my-bold-text">Ostatnie logowanie:</div>
-                        <div class="col-sm-8">{{ user.last_login.strftime('%d.%m.%Y, godz. %H:%M:%S') }}</div>
+                        <div class="col-sm-8">{{ current_user.last_login.strftime('%d.%m.%Y, godz. %H:%M:%S') }}</div>
                     </div>
                     <div class="row my-row">
                         <div class="col-sm-4 my-bold-text">Wypożyczonych aktualnie:</div>
@@ -61,7 +57,7 @@
                     {% endif %}
                     <div class="row my-row">
                         <div class="col-sm-12">
-                            <a href="{{ url_for('main.loan_user', user_id=user.id) }}" class="btn btn-info">Historia wypożyczeń</a>
+                            <a href="{{ url_for('auth.loan_user_logged') }}" class="btn btn-info">Moje wypożyczenia</a>
                         </div>
                     </div>
                 </div>

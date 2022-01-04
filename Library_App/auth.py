@@ -90,8 +90,7 @@ def profile():
         Books_Users.loan_date.asc()).all()
     
     return render_template(
-        'user_profile.html',
-        user=current_user,
+        'user_profile_logged.html',
         actuall_loan=actuall_loan
         )
 
@@ -169,6 +168,24 @@ def user_remove():
     return render_template(
         'user_remove.html',
         user=current_user,
+        )
+
+
+@auth.route('/loan_user_logged')
+@login_required
+def loan_user_logged():
+    
+    loaned = request.args.get('loaned')
+    loan_list = Books_Users.query.filter_by(user=current_user).order_by(
+        Books_Users.return_date.desc(), Books_Users.loan_date.desc()).all()
+    
+    if loaned == 'True':
+        loan_list = [item for item in loan_list if item.return_date == None]
+        flash('Aktualnie wypożyczone książki', 'success')
+    
+    return render_template(
+        'loan_user_logged.html',
+        loan_list=loan_list,
         )
 
 
