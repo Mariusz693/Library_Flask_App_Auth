@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 {% block title %} Profil Książki {% endblock %}
 {% block content %}
-    <div class="container my-container">
+    <div class="my-container">
         <div class="mt-4 ml-4 mr-4">
             <div class="row border-bottom border-3 my-header-row">
-                <div class="col-sm-9 mb-2 my-header-col">
-                    <h4 class="color-header">Profil książki - "{{ book }}"</h4>
+                <div class="col-6 mb-2 my-header-col">
+                    <h4 class="color-header">"{{ book }}"</h4>
                 </div>
-                <div class="col-sm-3 d-flex justify-content-end mb-2 my-header-col">
-                    {% if current_user.is_authenticated and current_user.status.name == "Admin" %}
+                <div class="col-6 d-flex justify-content-end mb-2 my-header-col">
+                    {% if current_user.is_authenticated and current_user.status.name == admin %}
                     <a href="{{ url_for('main.book_edit', book_id=book.id) }}" class="btn btn-success my-button">Edytuj</a>
                     <a href="{{ url_for('main.book_delete', book_id=book.id) }}" class="btn btn-danger my-button">Usuń</a>
                     {% endif %}
@@ -18,38 +18,38 @@
             <div class="row">
                 <div class="col-9">                        
                     <div class="row my-row">
-                        <div class="col-sm-4 my-bold-text">Tytuł:</div>
-                        <div class="col-sm-8">{{ book.title }}</div>
+                        <div class="col-4 my-bold-text">Tytuł:</div>
+                        <div class="col-8">{{ book.title }}</div>
                     </div>
                     <div class="row my-row">
-                        <div class="col-sm-4 my-bold-text">Numer ISBN:</div>
-                        <div class="col-sm-8">{{ book.isbn }}</div>
+                        <div class="col-4 my-bold-text">Numer ISBN:</div>
+                        <div class="col-8">{{ book.isbn }}</div>
                     </div>
                     <div class="row my-row">
-                        <div class="col-sm-4 my-bold-text">Autor:</div>
-                        <div class="col-sm-8">
+                        <div class="col-4 my-bold-text">Autor:</div>
+                        <div class="col-8">
                             <a href="{{ url_for('main.author_profile', author_id=book.author.id) }}" class="my-link">{{ book.author }}</a>
                         </div>
                     </div>
                     <div class="row my-row">
-                        <div class="col-sm-4 my-bold-text">Opis:</div>
-                        <div class="col-sm-8">{{ book.description }}</div>
+                        <div class="col-4 my-bold-text">Opis:</div>
+                        <div class="col-8">{{ book.description }}</div>
                     </div>
                     <div class="row my-row">
-                        <div class="col-sm-4 my-bold-text">Kategorie:</div>
-                        <div class="col-sm-8">{{ book.categories|join(", ") }}</div>
+                        <div class="col-4 my-bold-text">Kategorie:</div>
+                        <div class="col-8">{{ book.categories|join(", ") }}</div>
                     </div>
                     <div class="row my-row">
-                        <div class="col-sm-4 my-bold-text">Ilość egrzemplarzy:</div>
-                        <div class="col-sm-8">{{ book.copies }}</div>
+                        <div class="col-4 my-bold-text">Ilość egrzemplarzy:</div>
+                        <div class="col-8">{{ book.copies }}</div>
                     </div>
                     <div class="row my-row">
-                        <div class="col-sm-4 my-bold-text">Wypożyczone:</div>
-                        <div class="col-sm-8">{{ book.borrowed_copies }}</div>
+                        <div class="col-4 my-bold-text">Wypożyczone:</div>
+                        <div class="col-8">{{ book.borrowed_copies }}</div>
                     </div>
-                    {% if current_user.is_authenticated and current_user.status.name == "Admin" %}
+                    {% if current_user.is_authenticated and current_user.status.name == admin %}
                     <div class="row my-row">
-                        <div class="col-sm-12">
+                        <div class="col-12">
                             <a href="{{ url_for('main.loan_book', book_id=book.id) }}" class="btn btn-info">Historia wypożyczeń</a>
                         </div>
                     </div>

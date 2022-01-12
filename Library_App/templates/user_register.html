@@ -1,29 +1,30 @@
 {% extends "base.html" %}
 {% block title %} Rejestracja {% endblock %}
 {% block content %}
-    <div class="container my-container">
+    <div class="my-container">
         <div class="mt-4 ml-4 mr-4">
-            <form action="{{ url_for('auth.register') }}" method="POST">
+            <form method="POST">
                 {{ form.csrf_token }}
                 <div class="row border-bottom border-3 my-header-row">
-                    <div class="col-sm-9 mb-2 my-header-col">
+                    <div class="col-6 mb-2 my-header-col">
                         <h4 class="color-header">Rejestracja</h4>
                     </div>
-                    <div class="col-sm-3 d-flex justify-content-end mb-2 my-header-col">
+                    <div class="col-6 d-flex justify-content-end mb-2 my-header-col">
                         {{ form.submit(class="btn btn-success my-button") }}
                         <a href="{{ url_for('main.index') }}" class="btn btn-info my-button">Anuluj</a>
                     </div>
                 </div>
                 {% for message in get_flashed_messages() %}
                 <div class="row">
-                    <div class="col-sm-12 alert alert-danger text-center my-alert">
+                    <div class="col-12 alert alert-danger text-center my-alert-area">
                         {{ message }}
-                        <button type="button" class="btn btn-danger my-close" data-dismiss="alert">X</button>
+                        <button type="button" class="btn btn-danger my-button-close" data-dismiss="alert">X</button>
                     </div>
                 </div>
                 {% endfor %}
                 <div class="form-group row">
-                    <div class="col-sm-6 my-input-area">
+                    <div class="col-lg-2 col-md-1 col-sm-0"></div>
+                    <div class="col-lg-4 col-md-5 col-sm-6 my-input-area">
                         {{ form.first_name.label(class="label-size col-form-label my-bold-text") }}
                         {{ form.first_name(class="form-control") }}
                         {% if form.first_name.errors %}
@@ -34,7 +35,7 @@
                         </ul>
                         {% endif %}
                     </div>
-                    <div class="col-sm-6 my-input-area">
+                    <div class="col-lg-4 col-md-5 col-sm-6 my-input-area">
                         {{ form.last_name.label(class="label-size col-form-label my-bold-text") }}
                         {{ form.last_name(class="form-control") }}
                         {% if form.last_name.errors %}
@@ -45,9 +46,11 @@
                         </ul>
                         {% endif %}
                     </div>
+                    <div class="col-lg-2 col-md-1 col-sm-0"></div>
                 </div>
                 <div class="form-group row">
-                    <div class="col-sm-6 my-input-area">
+                    <div class="col-lg-2 col-md-1 col-sm-0"></div>
+                    <div class="col-lg-4 col-md-5 col-sm-6 my-input-area">
                         {{ form.email.label(class="label-size col-form-label my-bold-text") }}
                         {{ form.email(class="form-control", placeholder="youremail@example.com") }}
                         {% if form.email.errors %}
@@ -58,7 +61,7 @@
                         </ul>
                         {% endif %}
                     </div>
-                    <div class="col-sm-6 my-input-area">
+                    <div class="col-lg-4 col-md-5 col-sm-6 my-input-area">
                         {{ form.phone_number.label(class="label-size col-form-label my-bold-text") }}
                         {{ form.phone_number(class="form-control") }}
                         {% if form.phone_number.errors %}
@@ -69,9 +72,11 @@
                         </ul>
                         {% endif %}
                     </div>
+                    <div class="col-lg-2 col-md-1 col-sm-0"></div>
                 </div>
                 <div class="form-group row">
-                    <div class="col-sm-6 my-input-area">
+                    <div class="col-lg-2 col-md-1 col-sm-0"></div>
+                    <div class="col-lg-4 col-md-5 col-sm-6 my-input-area">
                         {{ form.password.label(class="label-size col-form-label my-bold-text") }}
                         {{ form.password(class="form-control") }}
                         {% if form.password.errors %}
@@ -82,7 +87,7 @@
                         </ul>
                         {% endif %}
                     </div>
-                    <div class="col-sm-6 my-input-area">
+                    <div class="col-lg-4 col-md-5 col-sm-6 my-input-area">
                         {{ form.repeat_password.label(class="label-size col-form-label my-bold-text") }}
                         {{ form.repeat_password(class="form-control") }}
                         {% if form.repeat_password.errors %}
@@ -93,12 +98,17 @@
                         </ul>
                         {% endif %}
                     </div>
+                    <div class="col-lg-2 col-md-1 col-sm-0"></div>
                 </div>
             </form>
-        </div>
-        <div>                
-            <img class="rounded mx-auto d-block img-thumbnail my-style" 
-            src="{{ url_for('static', filename='images/user_form.jpg') }}" alt="Register photo">
+            <div class="row">
+                <div class="col-lg-2 col-md-1 col-sm-0"></div>
+                <div class="col-lg-8 col-md-10 col-sm-12 my-img-area">   
+                    <img class="rounded mx-auto d-block img-thumbnail" 
+                    src="{{ url_for('static', filename='images/user_form.jpg') }}" alt="User form photo">
+                </div>
+                <div class="col-lg-2 col-md-1 col-sm-0"></div>
+            </div>
         </div>
     </div>
 {% endblock content %}

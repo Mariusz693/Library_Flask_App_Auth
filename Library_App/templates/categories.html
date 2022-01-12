@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %} Kategorie {% endblock %}
+{% block content %}
+    <div class="my-container">
+        <div class="mt-4 ml-4 mr-4">
+            <div class="row border-bottom border-3 my-header-row">
+                <div class="col-6 mb-2 my-header-col">
+                    <h4 class="color-header">Kategorie książek</h4>
+                </div>
+                <div class="col-6 d-flex justify-content-end mb-2 my-header-col">
+                    <button type="button" data-toggle="modal" data-target="#exampleModal" 
+                        class="btn btn-success my-button">Dodaj</button>
+                    <a href="{{ url_for('main.index') }}" class="btn btn-info my-button">Anuluj</a>
+                </div>
+            </div>
+            {% for category, message in get_flashed_messages(with_categories=true) %}
+            <div class="row">
+                <div class="col-12 alert alert-{{ category }} text-center my-alert-area">
+                    {{ message }}
+                    <button type="button" class="btn btn-{{ category }} my-button-close" data-dismiss="alert">X</button>
+                </div>
+            </div>
+            {% endfor %}
+            <div class="row">
+                <div class="col-lg-2 col-md-1 col-sm-0"></div>
+                <div class="col-lg-8 col-md-10 col-sm-12">
+                    <table class="table">
+                        <thead>
+                            <tr class="d-flex flex-wrap">
+                                <th class="col-11">Nazwa</th>
+                                <th class="col-1 text-center">Usuń</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for category in categories %}
+                            <tr class="d-flex flex-wrap my-table">
+                                <th class="col-11">{{ category }}</th>
+                                <td class="col-1 text-center">
+                                    <button type="button" data-name="{{category}}" data-id="{{category.id}}" data-toggle="modal" 
+                                    data-target="#exampleModal" class="my-button-cross">&cross;</button>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr class="d-flex flex-wrap">
+                                <th colspan="2" class="col-12">
+                                    Brak kategorii w bazie danych !!!
+                                </th>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="col-lg-2 col-md-1 col-sm-0"></div>
+                </div>
+            </div>
+        </div>
+        <div class="modal" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div id="modal-content" class="modal-content">
+                    <form>
+                        <div class="modal-header">
+                            <h6 class="text-center"></h6>
+                        </div>
+                        <div class="modal-body">
+                            <h1 class="text-center"></h1>
+                            <input type="text" class="form-control" name="name" id="name" placeholder="Dodaj nową kategorię"/>
+                            <ul id="error-message">
+                                <li class="my-error"></li>
+                            </ul>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" id="button-delete" class="btn"></button>
+                            <button type="button" class="btn btn-info" data-dismiss="modal">Anuluj</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>    
+    </div>
+    <script src="{{ url_for('static', filename='js/categories.js') }}"></script>
+{% endblock content %}

@@ -1,20 +1,24 @@
 {% extends "base.html" %}
 {% block title %} Brak dostępu {% endblock %}
 {% block content %}
-    <div class="container my-container">
+    <div class="my-container">
         <div class="mt-4 ml-4 mr-4">
             {% for message in get_flashed_messages() %}
             <div class="row">
-                <div class="col-sm-12 alert alert-danger text-center my-alert">
+                <div class="col-12 alert alert-danger text-center my-alert-area">
                     {{ message }}
                     <a href="{{ url_for('main.index') }}" class="btn btn-danger my-button">Strona Główna</a>
                 </div>
             </div>
             {% endfor %}
         </div>
-        <div>                
-            <img class="rounded mx-auto d-block img-thumbnail my-style" 
-            src="{{ url_for('static', filename='images/wrong_access.jpg') }}" alt="Wrong access photo">
+        <div class="row">
+            <div class="col-lg-2 col-md-1 col-sm-0"></div>
+            <div class="col-lg-8 col-md-10 col-sm-12 my-img-area">   
+                <img class="rounded mx-auto d-block img-thumbnail" 
+                src="{{ url_for('static', filename='images/wrong_access.jpg') }}" alt="Wrong access photo">
+            </div>
+            <div class="col-lg-2 col-md-1 col-sm-0"></div>
         </div>
     </div>
 {% endblock content %}

@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 {% block title %} Profil Użytkownika {% endblock %}
 {% block content %}
-    <div class="container my-container">
+    <div class="my-container">
         <div class="mt-4 ml-4 mr-4">
             <div class="row border-bottom border-3 my-header-row">
-                <div class="col-sm-9 mb-2 my-header-col">
+                <div class="col-6 mb-2 my-header-col">
                     <h4 class="color-header">Mój profil</h4>
                 </div>
-                <div class="col-sm-3 d-flex justify-content-end mb-2 my-header-col">
+                <div class="col-6 d-flex justify-content-end mb-2 my-header-col">
                     <h5 class="color-header">{{ current_user.status.value }}</h5>
                     <a href="{{ url_for('auth.user_edit') }}" class="btn btn-success my-button">Edytuj</a>
                     <a href="{{ url_for('auth.user_password') }}" class="btn btn-success my-button">Hasło</a>
@@ -17,37 +17,37 @@
             <div class="row">
                 <div class="col-9">
                     <div class="row my-row">
-                        <div class="col-sm-4 my-bold-text">Imię:</div>
-                        <div class="col-sm-8">{{ current_user.first_name }}</div>
+                        <div class="col-4 my-bold-text">Imię:</div>
+                        <div class="col-8">{{ current_user.first_name }}</div>
                     </div>
                     <div class="row my-row">
-                        <div class="col-sm-4 my-bold-text">Nazwisko:</div>
-                        <div class="col-sm-8">{{ current_user.last_name }}</div>
+                        <div class="col-4 my-bold-text">Nazwisko:</div>
+                        <div class="col-8">{{ current_user.last_name }}</div>
                     </div>
                     <div class="row my-row">
-                        <div class="col-sm-4 my-bold-text">Adres email:</div>
-                        <div class="col-sm-8">{{ current_user.email }}</div>
+                        <div class="col-4 my-bold-text">Adres email:</div>
+                        <div class="col-8">{{ current_user.email }}</div>
                     </div>
                     <div class="row my-row">
-                        <div class="col-sm-4 my-bold-text">Numer telefonu:</div>
-                        <div class="col-sm-8">{% if current_user.phone_number %} (+48) {{ current_user.phone_number }} {% else %} (brak danych) {% endif %}</div>
+                        <div class="col-4 my-bold-text">Numer telefonu:</div>
+                        <div class="col-8">{% if current_user.phone_number %} (+48) {{ current_user.phone_number }} {% else %} (brak danych) {% endif %}</div>
                     </div>
                     <div class="row my-row">
-                        <div class="col-sm-4 my-bold-text">Data rejestracji:</div>
-                        <div class="col-sm-8">{{ current_user.created_on.strftime('%d.%m.%Y, godz. %H:%M:%S') }}</div>
+                        <div class="col-4 my-bold-text">Data rejestracji:</div>
+                        <div class="col-8">{{ current_user.created_on.strftime('%d.%m.%Y, godz. %H:%M:%S') }}</div>
                     </div>
                     <div class="row my-row">
-                        <div class="col-sm-4 my-bold-text">Ostatnie logowanie:</div>
-                        <div class="col-sm-8">{{ current_user.last_login.strftime('%d.%m.%Y, godz. %H:%M:%S') }}</div>
+                        <div class="col-4 my-bold-text">Ostatnie logowanie:</div>
+                        <div class="col-8">{{ current_user.last_login.strftime('%d.%m.%Y, godz. %H:%M:%S') }}</div>
                     </div>
                     <div class="row my-row">
-                        <div class="col-sm-4 my-bold-text">Wypożyczonych aktualnie:</div>
-                        <div class="col-sm-8">{{ actuall_loan|count }}</div>
+                        <div class="col-4 my-bold-text">Wypożyczonych aktualnie:</div>
+                        <div class="col-8">{{ actuall_loan|count }}</div>
                     </div>
                     {% if actuall_loan %}
                     <div class="row my-row">
-                        <div class="col-sm-4 my-bold-text">Tytuły na wypożyczeniu:</div>
-                        <div class="col-sm-8">
+                        <div class="col-4 my-bold-text">Tytuły na wypożyczeniu:</div>
+                        <div class="col-8">
                             {% for loan in actuall_loan %}
                             <a href="{{ url_for('main.book_profile', book_id=loan.book_id) }}" class="my-link">"{{ loan.book }}"</a>
                             {% if not loop.last %},&nbsp;{% endif %}
@@ -56,7 +56,7 @@
                     </div>
                     {% endif %}
                     <div class="row my-row">
-                        <div class="col-sm-12">
+                        <div class="col-12">
                             <a href="{{ url_for('auth.loan_user_logged') }}" class="btn btn-info">Moje wypożyczenia</a>
                         </div>
                     </div>

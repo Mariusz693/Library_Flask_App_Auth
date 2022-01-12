@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 {% block title %} Profil autora {% endblock %}
 {% block content %}
-    <div class="container my-container">
+    <div class="my-container">
         <div class="mt-4 ml-4 mr-4">
             <div class="row border-bottom border-3 my-header-row">
-                <div class="col-sm-9 mb-2 my-header-col">
-                    <h4 class="color-header">Profil autora - {{ author }}</h4>
+                <div class="col-6 mb-2 my-header-col">
+                    <h4 class="color-header">{{ author }}</h4>
                 </div>
-                <div class="col-sm-3 d-flex justify-content-end mb-2 my-header-col">
-                    {% if current_user.is_authenticated and current_user.status.name == "Admin" %}
+                <div class="col-6 d-flex justify-content-end mb-2 my-header-col">
+                    {% if current_user.is_authenticated and current_user.status.name == admin %}
                     <a href="{{ url_for('main.author_edit', author_id=author.id) }}" class="btn btn-success my-button">Edytuj</a>
                     <a href="{{ url_for('main.author_delete', author_id=author.id) }}" class="btn btn-danger my-button">Usuń</a>
                     {% endif %}
@@ -18,24 +18,24 @@
             <div class="row">
                 <div class="col-9">                        
                     <div class="row my-row">
-                        <div class="col-sm-4 my-bold-text">Imię i nazwisko (pseudonim):</div>
-                        <div class="col-sm-8">{{ author.name }}</div>
+                        <div class="col-4 my-bold-text">Imię i nazwisko (pseudonim):</div>
+                        <div class="col-8">{{ author.name }}</div>
                     </div>
                     <div class="row my-row">
-                        <div class="col-sm-4 my-bold-text">Data urodzenia:</div>
-                        <div class="col-sm-8">{% if author.date_of_birth %} {{ author.date_of_birth.strftime('%d.%m.%Y') }} {% else %} (brak danych) {% endif %}</div>
+                        <div class="col-4 my-bold-text">Data urodzenia:</div>
+                        <div class="col-8">{% if author.date_of_birth %} {{ author.date_of_birth.strftime('%d.%m.%Y') }} {% else %} (brak danych) {% endif %}</div>
                     </div>
                     <div class="row my-row">
-                        <div class="col-sm-4 my-bold-text">Data śmierci:</div>
-                        <div class="col-sm-8">{% if author.date_of_death %} {{ author.date_of_death.strftime('%d.%m.%Y') }} {% else %} (brak danych) {% endif %}</div>
+                        <div class="col-4 my-bold-text">Data śmierci:</div>
+                        <div class="col-8">{% if author.date_of_death %} {{ author.date_of_death.strftime('%d.%m.%Y') }} {% else %} (brak danych) {% endif %}</div>
                     </div>
                     <div class="row my-row">
-                        <div class="col-sm-4 my-bold-text">Książki:</div>
-                        <div class="col-sm-8">
+                        <div class="col-4 my-bold-text">Książki:</div>
+                        <div class="col-8">
                             <ul class="list-group">
                                 <div class="row">
                                     {% for book in author.books %}
-                                    <div class="col-sm-6">
+                                    <div class="col-6">
                                         <li class="my-list">
                                             <a href="{{ url_for('main.book_profile', book_id=book.id) }}" class="my-link">"{{ book.title }}"</a>
                                         </li>

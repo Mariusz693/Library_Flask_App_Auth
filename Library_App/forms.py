@@ -103,7 +103,7 @@ class UserPasswordForm(FlaskForm):
 class UserStatusForm(FlaskForm):
 
     status = SelectField(
-        label='Wybierz status użytkownika:', 
+        label='Wybierz status:', 
         choices=[(item.name, item.value) for item in UserType],
         validators=[DataRequired(message='Pole obowiązkowe.')]
     )

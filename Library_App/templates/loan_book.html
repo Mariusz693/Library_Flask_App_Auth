@@ -1,58 +1,82 @@
 {% extends "base.html" %}
 {% block title %} Historia wypożyczeń {% endblock %}
 {% block content %}
-    <div class="container my-container">
+    <div class="my-container">
         <div class="mt-4 ml-4 mr-4">
-            <form action="{{ url_for('main.loan_book', book_id=book.id) }}" method="POST">
+            <form method="POST">
                 <div class="row border-bottom border-3 my-header-row">
-                    <div class="col-sm-9 mb-2 my-header-col">
+                    <div class="col-6 mb-2 my-header-col">
                         <h4 class="color-header">Historia wypożyczeń - "{{ book }}"</h4>
                     </div>
-                    <div class="col-sm-3 d-flex justify-content-end mb-2 my-header-col">
+                    <div class="col-6 d-flex justify-content-end mb-2 my-header-col">
                         {% if request.args.get('loaned') %}
                         <a href="{{ url_for('main.loan_book', book_id=book.id) }}" class="btn btn-success my-button">Wszystkie</a>
                         {% else %}
                         <a href="{{ url_for('main.loan_book', book_id=book.id) }}?loaned=True" class="btn btn-success my-button">Aktualne</a>
                         {% endif %}
-                        <button type="submit" class="btn btn-danger my-button">Usuń</button>
+                        <!-- <button type="submit" class="btn btn-danger my-button">Usuń</button> -->
+
+                        <button type="button" class="btn btn-danger my-button" data-toggle="modal" data-target="#exampleModal">
+                            Usuń
+                          </button>
                         <a href="{{ url_for('main.book_profile', book_id=book.id) }}" class="btn btn-info my-button">Powrót</a>
                     </div>
                 </div>
                 {% for category, message in get_flashed_messages(with_categories=true) %}
                 <div class="row">
-                    <div class="col-sm-12 alert alert-{{ category }} text-center my-alert">
+                    <div class="col-12 alert alert-{{ category }} text-center my-alert-area">
                         {{ message }}
-                        <button type="button" class="btn btn-{{ category }} my-close" data-dismiss="alert">X</button>
+                        <button type="button" class="btn btn-{{ category }} my-button-close" data-dismiss="alert">X</button>
                     </div>
                 </div>
                 {% endfor %}
+
+        <div class="modal" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">Modal title</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <p>Modal body text goes here.</p>
+                </div>
+                <div class="modal-footer">
+                  <button type="submit" class="btn btn-primary">Save changes</button>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
                 <div class="row">
                     <table class="table">
                         <thead>
                             <tr class="d-flex flex-wrap">
-                                <th class="col-sm-1">Lp.</th>
-                                <th class="col-sm-5">Imię i Nazwisko</th>
-                                <th class="col-sm-2 text-center">Data Wypożyczenia</th>
-                                <th class="col-sm-2 text-center">Data Zwrotu</th>
-                                <th class="col-sm-2 text-center">Zaznacz do usunięcia</th>
+                                <th class="col-1">Lp.</th>
+                                <th class="col-lg-5 col-md-5 col-sm-3">Imię i Nazwisko</th>
+                                <th class="col-lg-2 col-md-2 col-sm-3 text-center">Data Wypożyczenia</th>
+                                <th class="col-lg-2 col-md-2 col-sm-3 text-center">Data Zwrotu</th>
+                                <th class="col-2 text-center">Zaznacz</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for loan in loan_list %}
                             <tr class="d-flex flex-wrap my-table">
-                                <td class="col-sm-1">{{ loop.index }}</td>
-                                <th class="col-sm-5">
+                                <td class="col-1">{{ loop.index }}</td>
+                                <th class="col-lg-5 col-md-5 col-sm-3">
                                     <a href="{{ url_for('main.user_profile', user_id=loan.user.id) }}" class="my-link">{{ loan.user }}</a>
                                 </th>
-                                <td class="col-sm-2 text-center">{{ loan.loan_date.strftime('%d.%m.%Y') }}</td>
-                                <td class="col-sm-2 text-center">
+                                <td class="col-lg-2 col-md-2 col-sm-3 text-center">{{ loan.loan_date.strftime('%d.%m.%Y') }}</td>
+                                <td class="col-lg-2 col-md-2 col-sm-3 text-center">
                                     {% if loan.return_date %} 
                                         {{ loan.return_date.strftime('%d.%m.%Y') }} 
                                     {% else %} 
                                         <a href="{{ url_for('main.loan_return', loan_id=loan.id) }}?next={{ request.path }}" class="my-link">Brak zwrotu !</a> 
                                     {% endif %}
                                 </td>
-                                <td class="col-sm-2 text-center">
+                                <td class="col-2 text-center">
                                     {% if loan.return_date %} 
                                     <input type="checkbox" name="loan_delete" value="{{ loan.id }}">
                                     {% else %}
@@ -62,7 +86,7 @@
                             </tr>
                             {% else %}
                             <tr class="d-flex flex-wrap">
-                                <th colspan="5" class="col-sm-12">
+                                <th colspan="5" class="col-12">
                                     {% if request.args.get('loaned') %}
                                         Brak aktualnie wypożyczonych egzemplarzy !!!
                                     {% else %}

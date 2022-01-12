@@ -25,7 +25,7 @@
                         <a class="nav-link {% if request.path != url_for('main.authors') %} active {% endif %}" href="{{ url_for('main.authors') }}">Autorzy</a>
                     </li>
                     {% if current_user.is_authenticated %}
-                        {% if current_user.status.name == "Admin" %}
+                        {% if current_user.status.name == admin %}
                         <li class="nav-item">
                             <a class="nav-link {% if request.path != url_for('main.users') %} active {% endif %}" href="{{ url_for('main.users') }}">Użytkownicy</a>
                         </li>
@@ -39,7 +39,7 @@
                                     <a class="dropdown-item" href="{{ url_for('main.book_add') }}">Nowa książka</a>
                                     <a class="dropdown-item" href="{{ url_for('main.author_add') }}">Nowy autor</a>
                                     <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="/categories/">Kategorie</a>
+                                    <a class="dropdown-item" href="{{ url_for('main.categories') }}">Kategorie</a>
                                 </div>
                             </li>
                         </li>

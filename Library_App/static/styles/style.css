@@ -1,3 +1,69 @@
+/* 
+
+img.my-style {
+    margin-top: 25px;
+    margin-bottom: 100px;
+    margin-left: 20px;
+    margin-right: 10%;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+button.my-button-add {
+    background-color: darkgreen;
+    color: white;
+    width: 70px;
+    border: none;
+    border-radius: 5px;
+}
+ 
+div.my-checkbox {
+    margin-bottom: 5px;
+}
+
+
+div.my-error {
+    color: darkred;
+}
+
+
+
+
+
+
+
+
+
+
+
+ */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 body {
     background: #dbe3de;
@@ -19,105 +85,13 @@ footer.my-footer {
 div.my-container {
     margin-top: 10px;
     margin-bottom: 75px;
-}
-
-img.my-style {
-    margin-top: 50px;
-    margin-bottom: 100px;
-}
-
-
-div.my-row{
-    margin-bottom: 20px;
-}
-
-a.my-button {
-    margin-left: 20px;
-}
-
-button.my-button {
-    margin-left: 20px;
-}
-
-input.my-button {
-    margin-left: 20px;
-}
-
-
-
-
-
-
-tr.my-table {
-    margin-top: 10px;
-}
-
-li.my-list {
-    margin-left: 15px;
-    margin-bottom: 10px;
-}
-
-button.my-button-cross {
-    color: darkred;
-    width: 70px;
-    border-radius: 5px;
-}
-
-button.my-button-add {
-    background-color: darkgreen;
-    color: white;
-    width: 70px;
-    border-radius: 5px;
-    border-color: darkgreen;
-}
- 
-div.my-checkbox {
-    margin-bottom: 5px;
-}
-
-a.my-link {
-    text-decoration: none;
-}
-
-/* div.my-error {
-    color: darkred;
-} */
-
-div.my-bold-text {
-    font-weight: bold;
-}
-
-input.my-search-input {
-    max-width: 300px;
-}
-
-
-
-
-div.my-input-area {
-    padding-left: 5%;
-    padding-right: 5%;
-    margin-bottom: 10px;
-}
-
-label.my-bold-text {
-    font-weight: bold;
-}
-
-div.my-alert {
-    width: 90%;
     margin-left: 5%;
     margin-right: 5%;
 }
 
-button.my-close {
-    height: 25px;
-    width: 50px;
-    line-height: 12.5px;
-}
-
-li.my-error {
-    color: red;
+div.my-text-area {
+    margin-top: 10px;
+    text-align: justify;
 }
 
 div.my-header-row {
@@ -130,12 +104,89 @@ div.my-header-col {
     align-items: baseline;
 }
 
-div.my-display-none {
-    display: none;
+a.my-button {
+    margin-left: 10px;
 }
 
-ul.my-ul {
-    padding-left: 30px;
+button.my-button {
+    margin-left: 10px;
+}
+
+input.my-button {
+    margin-left: 10px;
+}
+
+button.my-button-close {
+    height: 25px;
+    width: 50px;
+    line-height: 12.5px;
+}
+
+a.my-link {
+    text-decoration: none;
+}
+
+li.my-list {
+    margin-left: 15px;
+    margin-bottom: 10px;
+}
+
+div.my-alert-area {
+    width: 90%;
+    margin-left: 5%;
+    margin-right: 5%;
+}
+
+
+div.my-alert-area-2 {
+    padding-left: 5%;
+    padding-right: 5%;
+    margin-bottom: 10px;
+}
+
+div.my-input-area {
+    padding-left: 5%;
+    padding-right: 5%;
+    margin-bottom: 10px;
+}
+
+div.my-align-end {
+    align-items: flex-end;
+}
+
+div.my-img-area {
+    padding-left: 5%;
+    padding-right: 5%;
+    margin-bottom: 10px;
+    margin-top: 25px;
+}
+
+li.my-error {
+    color: red;
+}
+
+div.my-row{
+    margin-bottom: 15px;
+}
+
+div.my-bold-text {
+    font-weight: bold;
+}
+
+label.my-bold-text {
+    font-weight: bold;
+}
+
+input.my-search-input {
+    max-width: 300px;
+}
+
+tr.my-table {
+    margin-top: 10px;
+}
+
+div.my-display-none {
+    display: none;
 }
 
 input[type=checkbox] {
@@ -143,6 +194,16 @@ input[type=checkbox] {
     margin: 7.5px 5px 7.5px 5px;
 }
 
-div.my-button-area {
-    align-items: flex-end;
+ul.my-checkbox-ul {
+    padding-left: 30px;
+}
+
+button.my-button-cross {
+    color: darkred;
+    background: none;
+    border: none;   
+}
+
+button:focus {
+    outline: none;
 }

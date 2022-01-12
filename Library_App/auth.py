@@ -12,6 +12,11 @@ auth = Blueprint(
     )
 
 
+@auth.context_processor
+def admin_type():
+    return dict(admin=UserType.Admin.name)
+
+
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
 

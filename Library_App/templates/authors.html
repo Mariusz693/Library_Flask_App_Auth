@@ -1,53 +1,49 @@
 {% extends "base.html" %}
 {% block title %} Autorzy {% endblock %}
 {% block content %}
-    <div class="container my-container">
+    <div class="my-container">
         <div class="mt-4 ml-4 mr-4">
-            <form action="{{ url_for('main.authors') }}" method="GET">
+            <form method="GET">
                 <div class="row border-bottom border-3 my-header-row">
-                    <div class="col-sm-6 mb-2 my-header-col">
+                    <div class="col-6 mb-2 my-header-col">
                         {% if request.args.search %}
-                        <h4 class="color-header">Wyniki wyszukiwania dla "{{ request.args.search }}"</h4>
+                        <h4 class="color-header">Wyniki wyszukiwania: "{{ request.args.search }}"</h4>
                         {% else %}
-                        <h4 class="color-header">Wszyscy autorzy w bazie</h4>
+                        <h4 class="color-header">Wszyscy autorzy</h4>
                         {% endif %}
                     </div>
-                    <div class="col-sm-6 d-flex justify-content-end mb-2 my-header-col">
-                        <input type="text" class="form-control my-search-input" name="search" {% if request.args.search %} value="{{ request.args.search }}" {% endif %} placeholder="Wyszukaj">
+                    <div class="col-6 d-flex justify-content-end mb-2 my-header-col">
+                        <input type="text" class="form-control my-search-input" name="search" 
+                            {% if request.args.search %} value="{{ request.args.search }}" {% endif %} placeholder="Wyszukaj">
                         <button type="submit" class="btn btn-success my-button">Szukaj</button>
-                        {% if current_user.is_authenticated and current_user.status.name == "Admin" %}
-                        <a href="{{ url_for('main.author_add') }}" class="btn btn-info my-button">Dodaj</a>
-                        {% endif %}
-                        {% if request.args.search %} 
-                        <a href="{{ url_for('main.authors') }}" class="btn btn-info my-button">Wszyscy</a>
-                        {% endif %}           
+                        {% if current_user.is_authenticated and current_user.status.name == admin %}
+                        <a href="{{ url_for('main.author_add') }}" class="btn btn-success my-button">Dodaj</a>
+                        {% endif %}        
                     </div>
                 </div>
             </form>
             <table class="table">
                 <thead>
                     <tr class="d-flex flex-wrap">
-                        <th class="col-sm-1">Lp.</th>
-                        <th class="col-sm-6">Imię i nazwisko (pseudonim)</th>
-                        <th class="col-sm-2">Data urodzenia</th>
-                        <th class="col-sm-2">Data śmierci</th>
-                        <th class="col-sm-1 text-center">#</th>
+                        <th class="col-1">Lp.</th>
+                        <th class="col-lg-7 col-md-7 col-sm-5">Imię i nazwisko (pseudonim)</th>
+                        <th class="col-lg-2 col-md-2 col-sm-3 text-center">Data urodzenia</th>
+                        <th class="col-lg-2 col-md-2 col-sm-3 text-center">Data śmierci</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for author in authors_list %}
                     <tr class="d-flex flex-wrap my-table">
                         <td class="col-sm-1">{{ loop.index }}</td>
-                        <th class="col-sm-6">{{ author.name }}</th>
-                        <td class="col-sm-2">{% if author.date_of_birth %} {{ author.date_of_birth.strftime('%d.%m.%Y') }} {% else %} (brak danych) {% endif %}</td>
-                        <td class="col-sm-2">{% if author.date_of_death %} {{ author.date_of_death.strftime('%d.%m.%Y') }} {% else %} (brak danych) {% endif %}</td>
-                        <td class="col-sm-1 text-center">
-                            <a href="{{ url_for('main.author_profile', author_id=author.id) }}" class="my-link">Profil</a>
-                        </td>
+                        <th class="col-lg-7 col-md-7 col-sm-5">
+                            <a href="{{ url_for('main.author_profile', author_id=author.id) }}" class="my-link">{{ author.name }}</a>
+                        </th>
+                        <td class="col-lg-2 col-md-2 col-sm-3 text-center">{% if author.date_of_birth %} {{ author.date_of_birth.strftime('%d.%m.%Y') }} {% else %} (brak danych) {% endif %}</td>
+                        <td class="col-lg-2 col-md-2 col-sm-3 text-center">{% if author.date_of_death %} {{ author.date_of_death.strftime('%d.%m.%Y') }} {% else %} (brak danych) {% endif %}</td>
                     </tr>
                     {% else %}
                     <tr class="d-flex flex-wrap">
-                        <th colspan="5" class="col-sm-12">
+                        <th colspan="4" class="col-12">
                             {% if request.args.search %}
                                 Brak szukanych autorów w bazie danych !!!
                             {% else %}

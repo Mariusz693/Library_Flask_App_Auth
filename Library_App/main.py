@@ -1,7 +1,8 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+import json
+from flask import Blueprint, render_template, request, flash, redirect, url_for, make_response
 from flask_login import login_required, current_user
-from datetime import datetime
-from .models import UserType, db, Book, Author, User, Books_Users
+from datetime import date, datetime
+from .models import db, UserType, Book, Author, User, Books_Users, Category
 from .forms import UserStatusForm, AuthorForm, BookForm, LoanForm
 
 main = Blueprint(
@@ -9,6 +10,11 @@ main = Blueprint(
     template_folder='templates',
     static_folder='static'
     )
+
+
+@main.context_processor
+def admin_type():
+    return dict(admin=UserType.Admin.name)
 
 
 @main.route('/')
@@ -48,8 +54,13 @@ def authors():
 
 
 @main.route('/users')
+@login_required
 def users():
     
+    if current_user.status.name != UserType.Admin.name:
+    
+        return redirect(url_for('main.wrong_access'))
+
     search = request.args.get('search')
     status = request.args.get('status')
     if search:
@@ -351,6 +362,9 @@ def book_edit(book_id):
         if existing_isbn and existing_isbn != book:
             flash('Numer ISBN istnieje już w bazie danych', 'danger')
 
+        elif form.copies.data < book.borrowed_copies:
+            flash(f'Ilość egzemplarzy na wypożyczeniu większa niż podana - {book.borrowed_copies}', 'danger')
+        
         else:
             if form.author.data or (form.name.data and form.date_of_birth.data):
                 existing_author = Author.query.filter_by(name=form.name.data).first()
@@ -575,4 +589,79 @@ def loan_book(book_id):
         'loan_book.html',
         book=book,
         loan_list=loan_list,
+        )
+
+
+@main.route("/categories", methods=['GET', 'POST', 'DELETE'])
+@login_required
+def categories():
+    
+    if current_user.status.name != UserType.Admin.name:
+    
+        return redirect(url_for('main.wrong_access'))
+
+    categories = Category.query.order_by(Category.name).all()
+    
+    # if request.method == 'POST':
+    #     delete_category = request.form.get('delete_category')
+    #     name = request.form.get('name')
+
+    #     if delete_category:
+    #         category = Category.query.get_or_404(delete_category)
+    #         db.session.delete(category)
+    #         db.session.commit()
+    #         categories = Category.query.order_by(Category.name).all()
+
+    #         flash(f'Usunięto kategorię - {category}', 'danger')
+
+    #     elif name:
+    #         existing_category = Category.query.filter_by(name=name).first()
+            
+    #         if existing_category:
+
+    #             flash('Kategoria istnieje już w bazie danych', 'danger')
+
+    #         else:
+    #             new_category = Category(name=name)
+    #             db.session.add(new_category)
+    #             db.session.commit()
+    #             categories = Category.query.order_by(Category.name).all()
+
+    #             flash(f'Dodano kategorię - {new_category}', 'success')
+    
+    if request.method == 'POST':
+        data = request.get_json(force=True)
+        existing_category = Category.query.filter_by(name=data['name']).first()
+        
+        if existing_category:
+
+            return make_response({'status': False}, 200)
+        
+        else:
+            new_category = Category(name=data['name'])
+            db.session.add(new_category)
+            db.session.commit()
+                
+            flash(f'Dodano kategorię - {new_category}', 'success')
+
+            return make_response({'status': True}, 200)
+
+    if request.method == 'DELETE':
+        data = request.get_json(force=True)
+        category = Category.query.filter_by(id=data['category']).first()
+        if category:
+            db.session.delete(category)
+            db.session.commit()
+
+            flash(f'Usunięto kategorię - {category}', 'danger')
+
+            return make_response({'status': True}, 200)
+
+        else:
+            
+            return make_response({'status': False}, 200)
+
+    return render_template(
+        'categories.html',
+        categories=categories
         )

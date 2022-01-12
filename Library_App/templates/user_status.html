@@ -1,16 +1,15 @@
 {% extends "base.html" %}
-{% block title %} Zmień uprawnienia {% endblock %}
+{% block title %} Zmień status {% endblock %}
 {% block content %}
-    <div class="container my-container">
+    <div class="my-container">
         <div class="mt-4 ml-4 mr-4">
             <form method="POST">
                 {{ form.csrf_token }}
                 <div class="row border-bottom border-3 my-header-row">
-                    <div class="col-sm-9 mb-2 my-header-col">
-                        <h4 class="color-header">Zmień uprawnienia - {{ user }}</h4>
+                    <div class="col-6 mb-2 my-header-col">
+                        <h4 class="color-header">Zmień status</h4>
                     </div>
-                    <div class="col-sm-3 d-flex justify-content-end mb-2 my-header-col">
-                        <h5 class="color-header">{{ user.status.value }}</h5>
+                    <div class="col-6 d-flex justify-content-end mb-2 my-header-col">
                         {{ form.submit(class="btn btn-success my-button") }}
                         <a href="{{ url_for('main.user_profile', user_id=user.id) }}" class="btn btn-info my-button">Wstecz</a>
                     </div>
@@ -18,16 +17,22 @@
                 {% for category, message in get_flashed_messages(with_categories=true) %}
                 {% if loop.last %}
                 <div class="row">
-                    <div class="col-sm-12 alert alert-{{ category }} text-center my-alert">
+                    <div class="col-12 alert alert-{{ category }} text-center my-alert-area">
                         {{ message }}
-                        <button type="button" class="btn btn-{{ category }} my-close" data-dismiss="alert">X</button>
+                        <button type="button" class="btn btn-{{ category }} my-button-close" data-dismiss="alert">X</button>
                     </div>
                 </div>
                 {% endif %}
                 {% endfor %}
                 <div class="form-group row">
-                    <div class="col-sm-3"></div>
-                    <div class="col-sm-6 my-input-area">
+                    <div class="col-lg-3 col-md-2 col-sm-1"></div>
+                    <div class="col-lg-6 col-md-8 col-sm-10 my-img-area">
+                        <div class="row my-row">
+                            <div class="col-6 mb-2 my-bold-text">{{ user }}</div>
+                            <div class="col-6 d-flex justify-content-end mb-2 my-bold-text">
+                                Status: {{ user.status.value }}
+                            </div>
+                        </div>
                         {{ form.status.label(class="label-size col-form-label my-bold-text") }}
                         {{ form.status(class="form-control") }}
                         {% if form.status.errors %}
@@ -38,13 +43,17 @@
                         </ul>
                         {% endif %}
                     </div>
-                    <div class="col-sm-3"></div>
+                    <div class="col-lg-3 col-md-2 col-sm-1"></div>
                 </div>
             </form>
-        </div>
-        <div>                
-            <img class="rounded mx-auto d-block img-thumbnail my-style" 
-            src="{{ url_for('static', filename='images/user_form.jpg') }}" alt="User Status photo">
+            <div class="row">
+                <div class="col-lg-3 col-md-2 col-sm-1"></div>
+                <div class="col-lg-6 col-md-8 col-sm-10 my-img-area">
+                    <img class="rounded mx-auto d-block img-thumbnail" 
+                    src="{{ url_for('static', filename='images/user_form.jpg') }}" alt="User form photo">
+                </div>
+                <div class="col-lg-3 col-md-2 col-sm-1"></div>
+            </div>
         </div>
     </div>
 {% endblock content %}
