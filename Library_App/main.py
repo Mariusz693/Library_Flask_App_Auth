@@ -1,7 +1,7 @@
 import json
 from flask import Blueprint, render_template, request, flash, redirect, url_for, make_response
 from flask_login import login_required, current_user
-from datetime import date, datetime
+from datetime import datetime
 from .models import db, UserType, Book, Author, User, Books_Users, Category
 from .forms import UserStatusForm, AuthorForm, BookForm, LoanForm
 
@@ -14,7 +14,7 @@ main = Blueprint(
 
 @main.context_processor
 def admin_type():
-    return dict(admin=UserType.Admin.name)
+    return dict(admin=UserType.Admin.name, today=datetime.now().date())
 
 
 @main.route('/')
@@ -467,45 +467,11 @@ def loan_add():
             db.session.add(new_loan)
             book.borrowed_copies += 1
             db.session.commit()
-
             flash(f'Dodano wypożyczenie książki "{book}" - {user}', 'success')
     
     return render_template(
         'loan_form.html',
         form=form,
-        today_date=today_date
-        )
-
-
-@main.route('/loan_return/<int:loan_id>', methods=['GET', 'POST'])
-@login_required
-def loan_return(loan_id):
-    
-    if current_user.status.name != UserType.Admin.name:
-    
-        return redirect(url_for('main.wrong_access'))
-
-    loan = Books_Users.query.get_or_404(loan_id)
-    today_date = datetime.now().date()
-    next = request.args.get('next')
-
-    if request.method == 'POST':
-        if today_date < loan.loan_date:
-            flash('Błąd daty zwrotu - spróbuj ponownie', 'danger')
-
-        elif loan.return_date is not None:
-            flash(f'Książka została już zwrócona w dniu {loan.return_date.strftime("%d.%m.%Y")}', 'danger')
-        
-        else:           
-            loan.return_date = today_date
-            loan.book.borrowed_copies -= 1
-            db.session.commit()
-
-            return redirect(next)
-        
-    return render_template(
-        'loan_return.html',
-        loan=loan,
         today_date=today_date
         )
 
@@ -528,21 +494,23 @@ def loan_user(user_id):
         flash('Aktualnie wypożyczone książki', 'success')
     
     if request.method == 'POST':
-        loan_delete = request.form.getlist('loan_delete')
+        data = request.get_json(force=True)
+        loan = Books_Users.query.get_or_404(data['loan'])
+        loan.return_date = datetime.now().date()
+        loan.book.borrowed_copies -= 1
+        db.session.commit()
+        flash(f'Zapisano zwrot książki - {loan.user}', 'success')
 
-        if loan_delete:
-            loan_delete = Books_Users.query.filter(Books_Users.id.in_(loan_delete))
-            for loan in loan_delete:
-                if loan.return_date:
-                    db.session.delete(loan)
-            db.session.commit()
-            
-            flash('Usunięto z historii wypożyczeń książki wybrane pozycje', 'success')
-            loan_list = Books_Users.query.filter_by(user=user).order_by(Books_Users.loan_date.desc(), 
-                Books_Users.return_date.desc()).all()
+        return make_response({}, 200)
 
-        else:
-            flash('Brak zaznaczonych pozycji do usunięcia', 'warning')
+    if request.method == 'DELETE':
+        data = request.get_json(force=True)
+        loan = Books_Users.query.get_or_404(data['loan'])
+        db.session.delete(loan)
+        db.session.commit()
+        flash(f'Usunięto z historii wybraną pozycję - {loan.user}', 'success')
+
+        return make_response({}, 200)
     
     return render_template(
         'loan_user.html',
@@ -551,7 +519,7 @@ def loan_user(user_id):
         )
 
 
-@main.route('/loan_book/<int:book_id>', methods=['GET', 'POST'])
+@main.route('/loan_book/<int:book_id>', methods=['GET', 'POST', 'DELETE'])
 @login_required
 def loan_book(book_id):
     
@@ -567,23 +535,25 @@ def loan_book(book_id):
     if loaned == 'True':
         loan_list = [item for item in loan_list if item.return_date == None]
         flash('Aktualnie wypożyczone książki', 'success')
-    
+
     if request.method == 'POST':
-        loan_delete = request.form.getlist('loan_delete')
+        data = request.get_json(force=True)
+        loan = Books_Users.query.get_or_404(data['loan'])
+        loan.return_date = datetime.now().date()
+        loan.book.borrowed_copies -= 1
+        db.session.commit()
+        flash(f'Zapisano zwrot książki - {loan.user}', 'success')
 
-        if loan_delete:
-            loan_delete = Books_Users.query.filter(Books_Users.id.in_(loan_delete))
-            for loan in loan_delete:
-                if loan.return_date:
-                    db.session.delete(loan)
-            db.session.commit()
-            
-            flash('Usunięto z historii wypożyczeń książki wybrane pozycje', 'success')
-            loan_list = Books_Users.query.filter_by(book=book).order_by(Books_Users.loan_date.desc(), 
-                Books_Users.return_date.desc()).all()
+        return make_response({}, 200)
 
-        else:
-            flash('Brak zaznaczonych pozycji do usunięcia', 'warning')
+    if request.method == 'DELETE':
+        data = request.get_json(force=True)
+        loan = Books_Users.query.get_or_404(data['loan'])
+        db.session.delete(loan)
+        db.session.commit()
+        flash(f'Usunięto z historii wybraną pozycję - {loan.user}', 'success')
+
+        return make_response({}, 200)
     
     return render_template(
         'loan_book.html',
@@ -602,64 +572,30 @@ def categories():
 
     categories = Category.query.order_by(Category.name).all()
     
-    # if request.method == 'POST':
-    #     delete_category = request.form.get('delete_category')
-    #     name = request.form.get('name')
-
-    #     if delete_category:
-    #         category = Category.query.get_or_404(delete_category)
-    #         db.session.delete(category)
-    #         db.session.commit()
-    #         categories = Category.query.order_by(Category.name).all()
-
-    #         flash(f'Usunięto kategorię - {category}', 'danger')
-
-    #     elif name:
-    #         existing_category = Category.query.filter_by(name=name).first()
-            
-    #         if existing_category:
-
-    #             flash('Kategoria istnieje już w bazie danych', 'danger')
-
-    #         else:
-    #             new_category = Category(name=name)
-    #             db.session.add(new_category)
-    #             db.session.commit()
-    #             categories = Category.query.order_by(Category.name).all()
-
-    #             flash(f'Dodano kategorię - {new_category}', 'success')
-    
     if request.method == 'POST':
         data = request.get_json(force=True)
         existing_category = Category.query.filter_by(name=data['name']).first()
-        
+                    
         if existing_category:
 
-            return make_response({'status': False}, 200)
+            return make_response({}, 409)
         
         else:
             new_category = Category(name=data['name'])
             db.session.add(new_category)
-            db.session.commit()
-                
+            db.session.commit()    
             flash(f'Dodano kategorię - {new_category}', 'success')
 
-            return make_response({'status': True}, 200)
+            return make_response({}, 200)
 
     if request.method == 'DELETE':
         data = request.get_json(force=True)
-        category = Category.query.filter_by(id=data['category']).first()
-        if category:
-            db.session.delete(category)
-            db.session.commit()
+        category = Category.query.get_or_404(data['category'])
+        db.session.delete(category)
+        db.session.commit()
+        flash(f'Usunięto kategorię - {category}', 'success')
 
-            flash(f'Usunięto kategorię - {category}', 'danger')
-
-            return make_response({'status': True}, 200)
-
-        else:
-            
-            return make_response({'status': False}, 200)
+        return make_response({}, 200)
 
     return render_template(
         'categories.html',

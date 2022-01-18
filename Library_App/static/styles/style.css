@@ -198,10 +198,9 @@ ul.my-checkbox-ul {
     padding-left: 30px;
 }
 
-button.my-button-cross {
-    color: darkred;
-    background: none;
-    border: none;   
+button.my-button-outline {
+    margin-top: -7.5px;
+    border: none;
 }
 
 button:focus {

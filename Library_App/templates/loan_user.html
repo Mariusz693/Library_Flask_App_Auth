@@ -3,78 +3,121 @@
 {% block content %}
     <div class="my-container">
         <div class="mt-4 ml-4 mr-4">
-            <form method="POST">
-                <div class="row border-bottom border-3 my-header-row">
-                    <div class="col-6 mb-2 my-header-col">
-                        <h4 class="color-header">Historia wypożyczeń - {{ user }}</h4>
-                    </div>
-                    <div class="col-6 d-flex justify-content-end mb-2 my-header-col">
-                        {% if request.args.get('loaned') %}
-                        <a href="{{ url_for('main.loan_user', user_id=user.id) }}" class="btn btn-success my-button">Wszystkie</a>
+            <div class="row border-bottom border-3 my-header-row">
+                <div class="col-6 mb-2 my-header-col">
+                    <h4 class="color-header">Historia wypożyczeń - {{ user }}</h4>
+                </div>
+                <div class="col-6 d-flex justify-content-end mb-2 my-header-col">
+                    {% if request.args.get('loaned') %}
+                    <a href="{{ url_for('main.loan_user', user_id=user.id) }}" class="btn btn-success my-button">Wszystkie</a>
+                    {% else %}
+                    <a href="{{ url_for('main.loan_user', user_id=user.id) }}?loaned=True" class="btn btn-success my-button">Aktualne</a>
+                    {% endif %}
+                    <a href="{{ url_for('main.user_profile', user_id=user.id) }}" class="btn btn-info my-button">Powrót</a>
+                </div>
+            </div>
+            {% for category, message in get_flashed_messages(with_categories=true) %}
+            <div class="row">
+                <div class="col-12 alert alert-{{ category }} text-center my-alert-area">
+                    {{ message }}
+                    <button type="button" class="btn btn-{{ category }} my-button-close" data-dismiss="alert">X</button>
+                </div>
+            </div>
+            {% endfor %}
+            <div class="row">
+                <table class="table">
+                    <thead>
+                        <tr class="d-flex flex-wrap">
+                            <th class="col-1">Lp.</th>
+                            <th class="col-lg-5 col-md-5 col-sm-3">Tytuł</th>
+                            <th class="col-lg-2 col-md-2 col-sm-3 text-center">Data Wypożyczenia</th>
+                            <th class="col-lg-2 col-md-2 col-sm-3 text-center">Data Zwrotu</th>
+                            <th class="col-2 text-center">Usuń</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for loan in loan_list %}
+                        <tr class="d-flex flex-wrap my-table">
+                            <td class="col-1">{{ loop.index }}</td>
+                            <th class="col-lg-5 col-md-5 col-sm-3">
+                                <a href="{{ url_for('main.user_profile', user_id=loan.user.id) }}" class="my-link">{{ loan.book }}</a>
+                            </th>
+                            <td class="col-lg-2 col-md-2 col-sm-3 text-center">{{ loan.loan_date.strftime('%d.%m.%Y') }}</td>
+                            <td class="col-lg-2 col-md-2 col-sm-3 text-center">
+                                {% if loan.return_date %} 
+                                {{ loan.return_date.strftime('%d.%m.%Y') }} 
+                                {% else %} 
+                                <button type="button" data-today="{{ today.strftime('%d.%m.%Y') }}" data-book="{{ loan.book }}" data-user="{{ loan.user }}" 
+                                    data-loan_date="{{ loan.loan_date.strftime('%d.%m.%Y') }}" data-id="{{ loan.id }}" data-toggle="modal" 
+                                    data-target="#exampleModal" class="btn btn-outline-success my-button-outline">Zgłoś zwrot</button>
+                                {% endif %}
+                            </td>
+                            <td class="col-2 text-center">
+                                {% if loan.return_date %} 
+                                <button type="button" data-return_date="{{ loan.return_date.strftime('%d.%m.%Y') }}" data-book="{{ loan.book }}" data-user="{{ loan.user }}" 
+                                    data-loan_date="{{ loan.loan_date.strftime('%d.%m.%Y') }}" data-id="{{ loan.id }}" data-toggle="modal" 
+                                    data-target="#exampleModal" class="btn btn-outline-danger my-button-outline">&cross;</button>
+                                {% else %}
+                                <button type="button" disabled="disabled" class="btn btn-outline-danger my-button-outline">&cross;</button>
+                                {% endif %}
+                            </td>
+                        </tr>
                         {% else %}
-                        <a href="{{ url_for('main.loan_user', user_id=user.id) }}?loaned=True" class="btn btn-success my-button">Aktualne</a>
-                        {% endif %}
-                        <button type="submit" class="btn btn-danger my-button">Usuń</button>
-                        <a href="{{ url_for('main.user_profile', user_id=user.id) }}" class="btn btn-info my-button">Powrót</a>
-                    </div>
+                        <tr class="d-flex flex-wrap">
+                            <th colspan="5" class="col-12">
+                                {% if request.args.get('loaned') %}
+                                Brak aktualnie wypożyczonych egzemplarzy !!!
+                                {% else %}
+                                Brak historii wypożyczeń !!!
+                                {% endif %}
+                            </th>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>                     
+            </div>
+        </div>
+        <div class="modal" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div id="modal-content" class="modal-content">
+                    <form>
+                        <div class="modal-header">
+                            <h5 class="text-center"></h5>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-6 mb-2 my-bold-text">Książka:</div>
+                                <div class="col-6 d-flex justify-content-end mb-2">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 mb-2 my-bold-text">Użytkownik:</div>
+                                <div class="col-6 d-flex justify-content-end mb-2">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 mb-2 my-bold-text">Data wypożyczenia:</div>
+                                <div class="col-6 d-flex justify-content-end mb-2">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 mb-2 my-bold-text">Data zwrotu:</div>
+                                <div class="col-6 d-flex justify-content-end mb-2">
+                                </div>
+                            </div>
+                            <h1 class="text-center"></h1>
+                            <ul id="error-message">
+                                <li class="my-error"></li>
+                            </ul>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn">Potwierdź</button>
+                            <button type="reset" class="btn btn-info" data-dismiss="modal">Anuluj</button>
+                        </div>
+                    </form>
                 </div>
-                {% for category, message in get_flashed_messages(with_categories=true) %}
-                <div class="row">
-                    <div class="col-12 alert alert-{{ category }} text-center my-alert-area">
-                        {{ message }}
-                        <button type="button" class="btn btn-{{ category }} my-button-close" data-dismiss="alert">X</button>
-                    </div>
-                </div>
-                {% endfor %}
-                <div class="row">
-                    <table class="table">
-                        <thead>
-                            <tr class="d-flex flex-wrap">
-                                <th class="col-1">Lp.</th>
-                                <th class="col-lg-5 col-md-5 col-sm-3">Tytuł</th>
-                                <th class="col-lg-2 col-md-2 col-sm-3 text-center">Data Wypożyczenia</th>
-                                <th class="col-lg-2 col-md-2 col-sm-3 text-center">Data Zwrotu</th>
-                                <th class="col-2 text-center">Zaznacz</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for loan in loan_list %}
-                            <tr class="d-flex flex-wrap my-table">
-                                <td class="col-1">{{ loop.index }}</td>
-                                <th class="col-lg-5 col-md-5 col-sm-3">
-                                    <a href="{{ url_for('main.book_profile', book_id=loan.book.id) }}" class="my-link">{{ loan.book }}</a>
-                                </th>
-                                <td class="col-lg-2 col-md-2 col-sm-3 text-center">{{ loan.loan_date.strftime('%d.%m.%Y') }}</td>
-                                <td class="col-lg-2 col-md-2 col-sm-3 text-center">
-                                    {% if loan.return_date %} 
-                                        {{ loan.return_date.strftime('%d.%m.%Y') }} 
-                                    {% else %} 
-                                        <a href="{{ url_for('main.loan_return', loan_id=loan.id) }}?next={{ request.path }}" class="my-link">Brak zwrotu !</a> 
-                                    {% endif %}
-                                </td>
-                                <td class="col-2 text-center">
-                                    {% if loan.return_date %} 
-                                    <input type="checkbox" name="loan_delete" value="{{ loan.id }}">
-                                    {% else %}
-                                    <input type="checkbox" name="loan_delete" disabled="disabled" value="{{ loan.id }}">
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            {% else %}
-                            <tr class="d-flex flex-wrap">
-                                <th colspan="5" class="col-12">
-                                    {% if request.args.get('loaned') %}
-                                        Brak aktualnie wypożyczonych egzemplarzy !!!
-                                    {% else %}
-                                        Brak historii wypożyczeń !!!
-                                    {% endif %}
-                                </th>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>                     
-                </div>
-            </form>
-        </div>                
+            </div>
+        </div>             
     </div>
+    <script src="{{ url_for('static', filename='js/loan.js') }}"></script>
 {% endblock content %}

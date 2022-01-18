@@ -3,35 +3,27 @@ const url = window.location.href;
 
 
 function deleteCategtory(idCategory) {
-    document.querySelector('form').addEventListener('submit', function(e){
-        e.preventDefault();
-        const obj = {
-            category: idCategory
-        };
-        fetch(url, {
-            method: 'DELETE',
-            body: JSON.stringify(obj),
-        })
-        .then(response => {
-            if (response.status === 200){
-                return response.json();
-            }
-            else {
-                throw Error();
-            }
-        })
-        .then(data => {
-            if (data['status'] === true){
-                window.location = url;
-            }
-            else {
-                errorEl.firstElementChild.innerText = 'Błąd usuwania kategorii, anuluj i spróbuj ponownie';
-                errorEl.classList.remove('d-none');
-            }
-        })
-        .catch(error => {
+    const obj = {
+        category: idCategory
+    };
+    fetch(url, {
+        method: 'DELETE',
+        body: JSON.stringify(obj),
+    })
+    .then(response => {
+        if (response.status === 200){
             window.location = url;
-        });
+        }
+        else if (response.status === 404) {
+            errorEl.firstElementChild.innerText = 'Błąd usuwania kategorii, anuluj i spróbuj ponownie';
+            errorEl.classList.remove('d-none');
+        }
+        else {
+            throw Error();
+        };
+    })
+    .catch(error => {
+        window.location = url;
     });
 };
 
@@ -55,19 +47,14 @@ function addCategory () {
             })
             .then(response => {
                 if (response.status === 200){
-                    return response.json();
+                    window.location = url;
+                }
+                else if (response.status === 409) {
+                    errorEl.firstElementChild.innerText = 'Kategoria już istnieje w bazie';
+                    errorEl.classList.remove('d-none');
                 }
                 else {
                     throw Error();
-                };
-            })
-            .then(data => {
-                if (data['status'] === true){
-                    window.location = url;
-                }
-                else {
-                    errorEl.firstElementChild.innerText = 'Kategoria już istnieje w bazie';
-                    errorEl.classList.remove('d-none');
                 };
             })
             .catch(error => {
@@ -94,7 +81,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 footerEl.firstElementChild.innerText = 'Usun';
                 footerEl.firstElementChild.classList.add('btn-danger');
                 footerEl.firstElementChild.classList.remove('btn-success');
-                deleteCategtory(e.target.dataset.id);
+                footerEl.firstElementChild.onclick = function (event){
+                    event.preventDefault();
+                    deleteCategtory(e.target.dataset.id);
+                }
             }
             else {
                 headerEl.firstElementChild.innerText = 'Dodaj nowa kategorię';
