@@ -15,12 +15,14 @@
                     </div>
                 </div>
                 {% for category, message in get_flashed_messages(with_categories=true) %}
-                <div class="row">
-                    <div class="col-12 alert alert-{{ category }} text-center my-input-area">
+                {% if loop.last %}
+                <div class="row my-alert-area">
+                    <div class="col-12 alert alert-{{ category }}" role="alert">
                         {{ message }}
                         <button type="button" class="btn btn-{{ category }} my-button-close" data-dismiss="alert">X</button>
                     </div>
                 </div>
+                {% endif %}
                 {% endfor %}
                 <div class="row">
                     <div class="col-lg-2 col-md-1 col-sm-0"></div>
@@ -28,7 +30,7 @@
                         <div class="row">
                             <div class="col-6 mb-2 my-bold-text">Dzisiejsza data:</div>
                             <div class="col-6 d-flex justify-content-end mb-2 my-bold-text">
-                                {{ today_date.strftime('%d.%m.%Y') }}
+                                {{ today.strftime('%d.%m.%Y') }}
                             </div>
                         </div>
                     </div>
@@ -69,7 +71,7 @@
                 <div class="col-lg-2 col-md-1 col-sm-0"></div>
                 <div class="col-lg-8 col-md-10 col-sm-12 my-img-area">   
                     <img class="rounded mx-auto d-block img-thumbnail" 
-                    src="{{ url_for('static', filename='images/loan_form.jpg') }}" alt="Loan form photo">
+                        src="{{ url_for('static', filename='images/loan_form.jpg') }}" alt="Loan form photo">
                 </div>
                 <div class="col-lg-2 col-md-1 col-sm-0"></div>
             </div>

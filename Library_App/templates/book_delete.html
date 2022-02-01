@@ -15,12 +15,14 @@
                 </div>
             </form>
             {% for category, message in get_flashed_messages(with_categories=true) %}
-            <div class="row">
-                <div class="col-12 alert alert-{{ category }} text-center my-alert-area">
+            {% if loop.last %}
+            <div class="row my-alert-area">
+                <div class="col-12 alert alert-{{ category }}" role="alert">
                     {{ message }}
                     <button type="button" class="btn btn-{{ category }} my-button-close" data-dismiss="alert">X</button>
                 </div>
             </div>
+            {% endif %}
             {% endfor %}
             <div class="row">
                 <div class="col-9">                        
@@ -55,7 +57,7 @@
                 </div>
                 <div class="col-3">
                     <img class="rounded mx-auto d-block img-thumbnail" 
-                    src="{{ url_for('static', filename='images/book_profile.jpg') }}" alt="Book profile photo">
+                        src="{{ url_for('static', filename='images/book_profile.jpg') }}" alt="Book profile photo">
                 </div>
             </div>
         </div>                

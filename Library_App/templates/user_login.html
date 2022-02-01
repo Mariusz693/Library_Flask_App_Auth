@@ -14,13 +14,15 @@
                         <a href="{{ url_for('main.index') }}" class="btn btn-info my-button">Anuluj</a>
                     </div>
                 </div>
-                {% for message in get_flashed_messages() %}
-                <div class="row">
-                    <div class="col-12 alert alert-danger text-center my-alert-area">
+                {% for category, message in get_flashed_messages(with_categories=true) %}
+                {% if loop.last %}
+                <div class="row my-alert-area">
+                    <div class="col-12 alert alert-{{ category }}" role="alert">
                         {{ message }}
-                        <button type="button" class="btn btn-danger my-button-close" data-dismiss="alert">X</button>
+                        <button type="button" class="btn btn-{{ category }} my-button-close" data-dismiss="alert">X</button>
                     </div>
                 </div>
+                {% endif %}
                 {% endfor %}
                 <div class="form-group row">
                     <div class="col-lg-3 col-md-2 col-sm-1"></div>

@@ -6,11 +6,7 @@
             <form method="GET">
                 <div class="row border-bottom border-3 my-header-row">
                     <div class="col-6 mb-2 my-header-col">
-                        {% if request.args.search %}
-                        <h4 class="color-header">Wyniki wyszukiwania: "{{ request.args.search }}"</h4>
-                        {% else %}
-                        <h4 class="color-header">Wszyscy autorzy</h4>
-                        {% endif %}
+                        <h4 class="color-header">{{ message }}</h4>
                     </div>
                     <div class="col-6 d-flex justify-content-end mb-2 my-header-col">
                         <input type="text" class="form-control my-search-input" name="search" 
@@ -22,6 +18,16 @@
                     </div>
                 </div>
             </form>
+            {% for category, message in get_flashed_messages(with_categories=true) %}
+            {% if loop.last %}
+            <div class="row my-alert-area">
+                <div class="col-12 alert alert-{{ category }}" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn btn-{{ category }} my-button-close" data-dismiss="alert">X</button>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
             <table class="table">
                 <thead>
                     <tr class="d-flex flex-wrap">
@@ -36,10 +42,19 @@
                     <tr class="d-flex flex-wrap my-table">
                         <td class="col-sm-1">{{ loop.index }}</td>
                         <th class="col-lg-7 col-md-7 col-sm-5">
-                            <a href="{{ url_for('main.author_profile', author_id=author.id) }}" class="my-link">{{ author.name }}</a>
+                            <a href="{{ url_for('main.author_profile', author_id=author.id) }}" 
+                            class="my-link">{{ author.name }}</a>
                         </th>
-                        <td class="col-lg-2 col-md-2 col-sm-3 text-center">{% if author.date_of_birth %} {{ author.date_of_birth.strftime('%d.%m.%Y') }} {% else %} (brak danych) {% endif %}</td>
-                        <td class="col-lg-2 col-md-2 col-sm-3 text-center">{% if author.date_of_death %} {{ author.date_of_death.strftime('%d.%m.%Y') }} {% else %} (brak danych) {% endif %}</td>
+                        <td class="col-lg-2 col-md-2 col-sm-3 text-center">
+                            {{ author.date_of_birth.strftime('%d.%m.%Y') }}
+                        </td>
+                        <td class="col-lg-2 col-md-2 col-sm-3 text-center">
+                            {% if author.date_of_death %} 
+                            {{ author.date_of_death.strftime('%d.%m.%Y') }} 
+                            {% else %} 
+                            (brak danych) 
+                            {% endif %}
+                        </td>
                     </tr>
                     {% else %}
                     <tr class="d-flex flex-wrap">

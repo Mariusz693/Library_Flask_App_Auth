@@ -6,11 +6,7 @@
             <form method="GET">
                 <div class="row border-bottom border-3 my-header-row">
                     <div class="col-6 mb-2 my-header-col">
-                        {% if request.args.search %}
-                        <h4 class="color-header">Wyniki wyszukiwania: "{{ request.args.search }}"</h4>
-                        {% else %}
-                        <h4 class="color-header">Wszystkie książki</h4>
-                        {% endif %}
+                        <h4 class="color-header">{{ message }}</h4>
                     </div>
                     <div class="col-6 d-flex justify-content-end mb-2 my-header-col">
                         <input type="text" class="form-control my-search-input" name="search"
@@ -22,6 +18,16 @@
                     </div>
                 </div>
             </form>
+            {% for category, message in get_flashed_messages(with_categories=true) %}
+            {% if loop.last %}
+            <div class="row my-alert-area">
+                <div class="col-12 alert alert-{{ category }}" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn btn-{{ category }} my-button-close" data-dismiss="alert">X</button>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
             <table class="table">
                 <thead>
                     <tr class="d-flex flex-wrap">
@@ -38,7 +44,9 @@
                     <tr class="d-flex flex-wrap my-table">
                         <td class="col-1">{{ loop.index }}</td>
                         <th class="col-lg-4 col-md-4 col-sm-3">
-                            <a href="{{ url_for('main.book_profile', book_id=book.id) }}" class="my-link">"{{ book.title }}"</a>
+                            <a href="{{ url_for('main.book_profile', book_id=book.id) }}" class="my-link">
+                                "{{ book.title }}"
+                            </a>
                         </th>
                         <td class="col-lg-2 col-md-2 col-sm-3">{{ book.isbn }}</td>
                         <td class="col-lg-3 col-md-3 col-sm-3">{{ book.author }}</td>

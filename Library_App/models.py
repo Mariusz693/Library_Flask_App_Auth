@@ -9,7 +9,7 @@ db = SQLAlchemy()
 
 class UserType(enum.Enum):
     Admin = 'Administrator'
-    User = 'Użytkownik'
+    Client = 'Klient'
 
 
 books_categories = db.Table(
@@ -47,7 +47,7 @@ class User(UserMixin, db.Model):
     last_name = db.Column(db.String(255), nullable=False, unique=False)
     email = db.Column(db.String(255), nullable=False, unique=True)
     phone_number = db.Column(db.String(9), nullable=True, unique=False)
-    status = db.Column(db.Enum(UserType), default=u'User', server_default=u'User', nullable=False)
+    status = db.Column(db.Enum(UserType), default=u'Client', server_default=u'Client', nullable=False)
     password = db.Column(db.String(200), primary_key=False, unique=False, nullable=False)
     created_on = db.Column(db.DateTime, index=False, unique=False, nullable=False)
     last_login = db.Column(db.DateTime, index=False, unique=False, nullable=True)

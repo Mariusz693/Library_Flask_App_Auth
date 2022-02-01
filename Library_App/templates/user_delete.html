@@ -5,32 +5,25 @@
         <div class="mt-4 ml-4 mr-4">
             <form method="POST">
                 <div class="row border-bottom border-3 my-header-row">
-                    {% if admin %}
                     <div class="col-6 mb-2 my-header-col">
                         <h4 class="color-header">Usunięcie profilu</h4>
                     </div>
                     <div class="col-6 d-flex justify-content-end mb-2 my-header-col">
+                        <h5 class="color-header">{{ user.status.value }}</h5>
                         <button type="submit" class="btn btn-danger my-button">Potwierdź</button>
-                        <a href="{{ url_for('main.user_profile', user_id=user.id ) }}" class="btn btn-info my-button">Wstecz</a>
+                        <a href="{{ url_for('auth.user') }}" class="btn btn-info my-button">Wstecz</a>
                     </div>
-                    {% else %}
-                    <div class="col-6 mb-2 my-header-col">
-                        <h4 class="color-header">Usunięcie swojego profilu</h4>
-                    </div>
-                    <div class="col-6 d-flex justify-content-end mb-2 my-header-col">
-                        <button type="submit" class="btn btn-danger my-button">Potwierdź</button>
-                        <a href="{{ url_for('auth.profile') }}" class="btn btn-info my-button">Wstecz</a>
-                    </div>
-                    {% endif %}
                 </div>
             </form>
             {% for category, message in get_flashed_messages(with_categories=true) %}
-            <div class="row">
-                <div class="col-12 alert alert-{{ category }} text-center my-alert-area">
+            {% if loop.last %}
+            <div class="row my-alert-area">
+                <div class="col-12 alert alert-{{ category }}" role="alert">
                     {{ message }}
                     <button type="button" class="btn btn-{{ category }} my-button-close" data-dismiss="alert">X</button>
                 </div>
             </div>
+            {% endif %}
             {% endfor %}
             <div class="row">
                 <div class="col-9">
@@ -48,7 +41,9 @@
                     </div>
                     <div class="row my-row">
                         <div class="col-4 my-bold-text">Numer telefonu:</div>
-                        <div class="col-8">{% if user.phone_number %} (+48) {{ user.phone_number }} {% else %} (brak danych) {% endif %}</div>
+                        <div class="col-8">
+                            {% if user.phone_number %} (+48) {{ user.phone_number }} {% else %} (brak danych) {% endif %}
+                        </div>
                     </div>
                     <div class="row my-row">
                         <div class="col-4 my-bold-text">Data rejestracji:</div>
@@ -56,7 +51,13 @@
                     </div>
                     <div class="row my-row">
                         <div class="col-4 my-bold-text">Ostatnie logowanie:</div>
-                        <div class="col-8">{{ user.last_login.strftime('%d.%m.%Y, godz. %H:%M:%S') }}</div>
+                        <div class="col-8">
+                            {% if user.last_login %} 
+                            {{ user.last_login.strftime('%d.%m.%Y, godz. %H:%M:%S') }} 
+                            {% else %} 
+                            (brak logowania) 
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
                 <div class="col-3">

@@ -15,12 +15,14 @@
                 </div>
             </form>
             {% for category, message in get_flashed_messages(with_categories=true) %}
-            <div class="row">
-                <div class="col-12 alert alert-{{ category }} text-center my-alert-area">
+            {% if loop.last %}
+            <div class="row my-alert-area">
+                <div class="col-12 alert alert-{{ category }}" role="alert">
                     {{ message }}
                     <button type="button" class="btn btn-{{ category }} my-button-close" data-dismiss="alert">X</button>
                 </div>
             </div>
+            {% endif %}
             {% endfor %}
             <div class="row">
                 <div class="col-9">
@@ -30,11 +32,17 @@
                     </div>
                     <div class="row my-row">
                         <div class="col-4 my-bold-text">Data urodzenia:</div>
-                        <div class="col-8">{% if author.date_of_birth %} {{ author.date_of_birth.strftime('%d.%m.%Y') }} {% else %} (brak danych) {% endif %}</div>
+                        <div class="col-8">{{ author.date_of_birth.strftime('%d.%m.%Y') }}</div>
                     </div>
                     <div class="row my-row">
                         <div class="col-4 my-bold-text">Data śmierci:</div>
-                        <div class="col-8">{% if author.date_of_death %} {{ author.date_of_death.strftime('%d.%m.%Y') }} {% else %} (brak danych) {% endif %}</div>
+                        <div class="col-8">
+                            {% if author.date_of_death %} 
+                            {{ author.date_of_death.strftime('%d.%m.%Y') }} 
+                            {% else %} 
+                            (brak danych) 
+                            {% endif %}
+                        </div>
                     </div>
                     <div class="row my-row">
                         <div class="col-4 my-bold-text">Ilość książek:</div>

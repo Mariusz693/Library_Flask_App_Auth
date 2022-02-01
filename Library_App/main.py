@@ -1,9 +1,10 @@
-import json
+from email import message
 from flask import Blueprint, render_template, request, flash, redirect, url_for, make_response
 from flask_login import login_required, current_user
 from datetime import datetime
 from .models import db, UserType, Book, Author, User, Books_Users, Category
 from .forms import UserStatusForm, AuthorForm, BookForm, LoanForm
+
 
 main = Blueprint(
     'main', __name__,
@@ -14,7 +15,7 @@ main = Blueprint(
 
 @main.context_processor
 def admin_type():
-    return dict(admin=UserType.Admin.name, today=datetime.now().date())
+    return dict(admin=UserType.Admin.name, client=UserType.Client.name, today=datetime.now().date())
 
 
 @main.route('/')
@@ -23,18 +24,31 @@ def index():
     return render_template('index.html')
 
 
+@main.route('/wrong_access')
+def wrong_access():
+    
+    return render_template(
+        'wrong_access.html',
+        )
+
+
 @main.route('/books')
 def books():
 
     search = request.args.get('search')
+    
     if search:
-        books_list = Book.query.filter(Book.title.ilike(f'{search}%')).all()
+        books_list = Book.query.filter(Book.title.ilike(f'{search}%')).order_by(Book.title).all()
+        message = f'Wyniki wyszukiwania: "{search}"'
+    
     else:
         books_list = Book.query.order_by(Book.title).all()
+        message = 'Wszystkie książki'
     
     return render_template(
         'books.html',
-        books_list=books_list
+        books_list=books_list,
+        message=message,
         )
 
 
@@ -42,14 +56,19 @@ def books():
 def authors():
     
     search = request.args.get('search')
+    
     if search:
-        authors_list = Author.query.filter(Author.name.ilike(f'{search}%')).all()
+        authors_list = Author.query.filter(Author.name.ilike(f'{search}%')).order_by(Author.name).all()
+        message = f'Wyniki wyszukiwania: "{search}"'
+    
     else:
         authors_list = Author.query.order_by(Author.name).all()
+        message = 'Wszyscy autorzy'
     
     return render_template(
         'authors.html',
-        authors_list=authors_list
+        authors_list=authors_list,
+        message=message,
         )
 
 
@@ -63,26 +82,24 @@ def users():
 
     search = request.args.get('search')
     status = request.args.get('status')
+    
     if search:
-        users_list = User.query.filter(User.last_name.ilike(f'{search}%')).filter_by(status=UserType.User.name).all()
+        users_list = User.query.filter(User.last_name.ilike(f'{search}%')).filter_by(
+            status=UserType.Client.name).order_by(User.last_name).all()
+        message = f'Wyniki wyszukiwania: "{search}"'
+    
     elif status == UserType.Admin.name:
         users_list = User.query.filter_by(status=UserType.Admin.name).order_by(User.last_name).all()
+        message = 'Wszyscy administratorzy'
+    
     else:
-        users_list = User.query.filter_by(status=UserType.User.name).order_by(User.last_name).all()
+        users_list = User.query.filter_by(status=UserType.Client.name).order_by(User.last_name).all()
+        message = 'Wszyscy klienci'
     
     return render_template(
         'users.html',
-        users_list=users_list
-        )
-
-
-@main.route('/wrong_access')
-def wrong_access():
-    
-    flash('Brak uprawnień administratora aby otworzyć tą stronę.')
-    
-    return render_template(
-        'wrong_access.html',
+        users_list=users_list,
+        message=message
         )
 
 
@@ -114,20 +131,18 @@ def user_status(user_id):
         return redirect(url_for('main.wrong_access'))
 
     user = User.query.get_or_404(user_id)
-    
-    if user.status.name == UserType.User.name:
-        flash('Zmieniając status użytkownika dodajesz mu wszystkie uprawnienia', 'warning')
-    else:
-        flash('Zmieniając status użytkownika zabierasz mu wszystkie uprawnienia', 'warning')
-
     form = UserStatusForm()
+    flash('Zmieniając status użytkownika zmieniasz jego uprawnienia', 'warning')
     
-    if form.validate_on_submit():
-        if user.status.name == UserType.Admin.name and User.query.filter_by(status=UserType.Admin.name).count() < 2 and form.status.data == UserType.User.name:
+    if form.validate_on_submit():    
+        if user.status.name == UserType.Admin.name and \
+            User.query.filter_by(status=UserType.Admin.name).count() < 2 and form.status.data == UserType.User.name:
             flash('Jestes jedynym administratorem, udziel komuś uprawnień administratora', 'danger')
+        
         else:
             user.status = form.status.data
             db.session.commit()
+            flash(f'Zmieniono status profilu: {user.status.value}', 'success')
 
             return redirect(url_for('main.user_profile', user_id=user.id))
     
@@ -138,44 +153,6 @@ def user_status(user_id):
         'user_status.html',
         user=user,
         form=form
-        )
-
-
-@main.route('/user_delete/<int:user_id>', methods=['GET', 'POST'])
-@login_required
-def user_delete(user_id):
-    
-    if current_user.status.name != UserType.Admin.name:
-    
-        return redirect(url_for('main.wrong_access'))
-
-    user = User.query.get_or_404(user_id)
-    
-    if request.method == 'POST':
-        if user.status.name == 'Admin' and User.query.filter_by(status=UserType.Admin.name).count() < 2:
-            flash('Jestes jedynym administratorem, nie możesz usunąć profilu', 'danger')
-        else:
-            for loan in user.books:
-                if loan.return_date is None:
-                    flash('Użytkownik posiada książki na wypożyczeniu, poczekaj na zwrot wszystkich', 'danger')
-                    break
-            else:
-                status = user.status
-                db.session.delete(user)
-                db.session.commit()
-                if status == UserType.Admin:
-
-                    return redirect(url_for('main.users') + '?status=Admin')
-
-                return redirect(url_for('main.users'))
-        
-    else:
-        flash('Usuwając profil użytkownika usuwasz historię jego wypożyczeń', 'warning')
-
-    return render_template(
-        'user_remove.html',
-        user=user,
-        admin=True
         )
 
 
@@ -190,12 +167,10 @@ def author_add():
     form = AuthorForm()
     
     if form.validate_on_submit():
-
         existing_author = Author.query.filter_by(name=form.name.data).first()
         
         if existing_author:
-
-            flash('Autor istnieje już w bazie danych', 'danger')
+            form.name.errors.append('Autor istnieje już w bazie danych')
 
         else:
             new_author = Author(
@@ -205,6 +180,7 @@ def author_add():
             )
             db.session.add(new_author)
             db.session.commit()
+            flash(f'Dodano profil autora: {new_author}', 'success')
 
             return redirect(url_for('main.authors'))
     
@@ -223,22 +199,20 @@ def author_edit(author_id):
         return redirect(url_for('main.wrong_access'))
     
     author = Author.query.get_or_404(author_id)
-
     form = AuthorForm(obj=author)
     
     if form.validate_on_submit():
-
         existing_author = Author.query.filter_by(name=form.name.data).first()
         
         if existing_author and existing_author != author:
-
-            flash('Autor istnieje już w bazie danych', 'danger')
+            form.name.errors.append('Autor istnieje już w bazie danych')
 
         else:
             author.name=form.name.data,
             author.date_of_birth=form.date_of_birth.data,
             author.date_of_death=form.date_of_death.data
             db.session.commit()
+            flash('Zmieniono profil autora', 'success')
 
             return redirect(url_for('main.author_profile', author_id=author.id))
     
@@ -273,11 +247,12 @@ def author_delete(author_id):
     if request.method == 'POST':
         for book in author.books:
             if book.borrowed_copies > 0:
-                flash('Książki autora na wypożyczeniu, poczekaj na zwrot wszystkich', 'danger')
+                flash('Egzemplarze książek autora na wypożyczeniu', 'danger')
                 break
         else:
             db.session.delete(author)
             db.session.commit()
+            flash(f'Usunięto profil autora: {author}', 'success')
 
             return redirect(url_for('main.authors'))
             
@@ -290,7 +265,7 @@ def author_delete(author_id):
         )
 
 
-@main.route('/book_add', methods=['GET', 'POST'])
+@main.route('/book_add', methods=['GET', 'POST', 'PUT'])
 @login_required
 def book_add():
     
@@ -301,50 +276,69 @@ def book_add():
     form = BookForm()
     
     if form.validate_on_submit():
-        existing_isbn = Book.query.filter_by(isbn=form.isbn.data).first()
+        existing_book = Book.query.filter_by(isbn=form.isbn.data).first()
         
-        if existing_isbn:
-            flash('Numer ISBN istnieje już w bazie danych', 'danger')
-            
+        if existing_book:
+            form.isbn.errors.append(f'Numer ISBN już istnieje w bazie: {existing_book}')
+
         else:
-            if form.author.data or (form.name.data and form.date_of_birth.data):
-                existing_author = Author.query.filter_by(name=form.name.data).first()
-                if existing_author:
-                    flash('Autor istnieje już w bazie danych, wybierz z listy', 'warning')
-                else:
-                    if form.author.data:
-                        author = form.author.data
-                    else:
-                        author = Author(
-                            name=form.name.data,
-                            date_of_birth=form.date_of_birth.data,
-                            date_of_death=form.date_of_death.data
-                        )   
-                        db.session.add(author)
-                    
-                    new_book = Book(
-                        isbn=form.isbn.data, 
-                        title=form.title.data,
-                        description=form.description.data,
-                        copies=form.copies.data,
-                        author=author
-                        )
-                    new_book.categories.extend(form.categories.data)
-                    db.session.add(new_book)
-                    db.session.commit()
+            new_book = Book(
+                isbn=form.isbn.data, 
+                title=form.title.data,
+                description=form.description.data,
+                copies=form.copies.data,
+                author=form.author.data
+            )
+            new_book.categories.extend(form.categories.data)
+            db.session.add(new_book)
+            db.session.commit()
+            flash(f'Dodano profil książki "{new_book}"', 'success')
+        
+            return redirect(url_for('main.books'))
 
-                    return redirect(url_for('main.books'))
+    if request.method == 'PUT':
+        data = request.get_json(force=True)
+        form_author = AuthorForm(data=data, meta={'csrf': False})
+        
+        if form_author.validate() and (Author.query.filter_by(name=form_author.name.data).first() is None):
+            new_author = Author(
+                name=form_author.name.data,
+                date_of_birth=form_author.date_of_birth.data,
+                date_of_death=form_author.date_of_death.data
+            )
+            db.session.add(new_author)
+            db.session.commit()
+            answer = {
+                'status': 'add',
+                'new_author': {
+                    'name': new_author.name,
+                    'id': new_author.id
+                }
+            }
 
-            else:
-                flash('Wybierz lub dodaj poprawnie nowego autora', 'danger')
+        else:
+            if Author.query.filter_by(name=form_author.name.data).first():  
+                form_author.name.errors.append('Autor istnieje już w bazie danych')
+            
+            answer = {
+                'status': 'error',
+                'errors': {
+                    'name': form_author.name.errors,
+                    'date_of_birth': form_author.date_of_birth.errors,
+                    'date_of_death': form_author.date_of_death.errors,
+                }
+            }
+
+        return make_response(answer, 200)
     
     return render_template(
         'book_form.html',
         form=form,
+        form_author=AuthorForm()
         )
 
 
-@main.route('/book_edit/<int:book_id>', methods=['GET', 'POST'])
+@main.route('/book_edit/<int:book_id>', methods=['GET', 'POST', 'PUT'])
 @login_required
 def book_edit(book_id):
     
@@ -353,50 +347,70 @@ def book_edit(book_id):
         return redirect(url_for('main.wrong_access'))
 
     book = Book.query.get_or_404(book_id)
-
     form = BookForm(obj=book)
-    
-    if form.validate_on_submit():    
-        existing_isbn = Book.query.filter_by(isbn=form.isbn.data).first()
-        
-        if existing_isbn and existing_isbn != book:
-            flash('Numer ISBN istnieje już w bazie danych', 'danger')
 
-        elif form.copies.data < book.borrowed_copies:
-            flash(f'Ilość egzemplarzy na wypożyczeniu większa niż podana - {book.borrowed_copies}', 'danger')
+    if form.validate_on_submit():
+        existing_book = Book.query.filter_by(isbn=form.isbn.data).first()
         
+        if (existing_book and existing_book != book) or (form.copies.data < book.borrowed_copies):
+            if existing_book and existing_book != book:
+                form.isbn.errors.append(f'Numer ISBN już istnieje w bazie: {existing_book}')
+            
+            if form.copies.data < book.borrowed_copies:
+                form.copies.errors.append(f'Ilość egzemplarzy na wypożyczeniu większa niż podana: {book.borrowed_copies}')
+
         else:
-            if form.author.data or (form.name.data and form.date_of_birth.data):
-                existing_author = Author.query.filter_by(name=form.name.data).first()
-                if existing_author:
-                    flash('Autor istnieje już w bazie danych, wybierz z listy', 'warning')
-                else:
-                    if form.author.data:
-                        author = form.author.data
-                    else:
-                        author = Author(
-                            name=form.name.data,
-                            date_of_birth=form.date_of_birth.data,
-                            date_of_death=form.date_of_death.data
-                        )   
-                        db.session.add(author)
-                    
-                    book.isbn=form.isbn.data, 
-                    book.title=form.title.data,
-                    book.description=form.description.data,
-                    book.copies=form.copies.data,
-                    book.author=author
-                    book.categories.extend(form.categories.data)
-                    db.session.commit()
+            book.isbn=form.isbn.data, 
+            book.title=form.title.data,
+            book.description=form.description.data,
+            book.copies=form.copies.data,
+            book.author=form.author.data
+            book.categories.extend(form.categories.data)
+            db.session.commit()
+            flash('Zmieniono profil książki', 'success')
+        
+            return redirect(url_for('main.book_profile', book_id=book.id))
 
-                    return redirect(url_for('main.book_profile', book_id=book.id))
+    if request.method == 'PUT':
 
-            else:
-                flash('Wybierz lub dodaj poprawnie nowego autora', 'danger')
+        data = request.get_json(force=True)
+        form_author = AuthorForm(data=data, meta={'csrf': False})
+
+        if form_author.validate() and (Author.query.filter_by(name=form_author.name.data).first() is None):
+            new_author = Author(
+                name=form_author.name.data,
+                date_of_birth=form_author.date_of_birth.data,
+                date_of_death=form_author.date_of_death.data
+            )
+            db.session.add(new_author)
+            db.session.commit()
+            answer = {
+                'status': 'add',
+                'new_author': {
+                    'name': new_author.name,
+                    'id': new_author.id
+                }
+            }
+
+        else:
+            if Author.query.filter_by(name=form_author.name.data).first():  
+                form_author.name.errors.append('Autor istnieje już w bazie danych')
+            
+            answer = {
+                'status': 'error',
+                'errors': {
+                    'name': form_author.name.errors,
+                    'date_of_birth': form_author.date_of_birth.errors,
+                    'date_of_death': form_author.date_of_death.errors,
+                }
+            }
+
+        return make_response(answer, 200)
     
     return render_template(
         'book_form.html',
         form=form,
+        form_author=AuthorForm(),
         book=book
         )
 
@@ -424,12 +438,13 @@ def book_delete(book_id):
 
     if request.method == 'POST':
         if book.borrowed_copies > 0:
-            flash('Książki na wypożyczeniu, poczekaj na zwrot wszystkich', 'danger')
+            flash('Egzemplarze książki na wypożyczeniu', 'danger')
         else:
             db.session.delete(book)
             db.session.commit()
-
-            return redirect(url_for('main.authors'))
+            flash(f'Usunięto profil książki "{book}"', 'success')
+    
+            return redirect(url_for('main.books'))
             
     else:
         flash('Usuwając profil książki usuwasz historię wypożyczeń', 'warning')
@@ -449,7 +464,6 @@ def loan_add():
         return redirect(url_for('main.wrong_access'))
 
     form = LoanForm()
-    today_date = datetime.now().date()
     
     if form.validate_on_submit():
         book = form.book.data
@@ -462,7 +476,7 @@ def loan_add():
             new_loan = Books_Users(
                 book=book,
                 user=user,
-                loan_date=today_date
+                loan_date=datetime.now().date()
             )
             db.session.add(new_loan)
             book.borrowed_copies += 1
@@ -472,11 +486,10 @@ def loan_add():
     return render_template(
         'loan_form.html',
         form=form,
-        today_date=today_date
         )
 
 
-@main.route('/loan_user/<int:user_id>', methods=['GET', 'POST'])
+@main.route('/loan_user/<int:user_id>', methods=['GET', 'POST', 'DELETE'])
 @login_required
 def loan_user(user_id):
     
@@ -491,7 +504,6 @@ def loan_user(user_id):
     
     if loaned == 'True':
         loan_list = [item for item in loan_list if item.return_date == None]
-        flash('Aktualnie wypożyczone książki', 'success')
     
     if request.method == 'POST':
         data = request.get_json(force=True)
@@ -499,7 +511,7 @@ def loan_user(user_id):
         loan.return_date = datetime.now().date()
         loan.book.borrowed_copies -= 1
         db.session.commit()
-        flash(f'Zapisano zwrot książki - {loan.user}', 'success')
+        flash(f'Zapisano zwrot książki - "{loan.book}"', 'success')
 
         return make_response({}, 200)
 
@@ -508,7 +520,7 @@ def loan_user(user_id):
         loan = Books_Users.query.get_or_404(data['loan'])
         db.session.delete(loan)
         db.session.commit()
-        flash(f'Usunięto z historii wybraną pozycję - {loan.user}', 'success')
+        flash(f'Usunięto z historii wybraną pozycję - "{loan.book}"', 'success')
 
         return make_response({}, 200)
     
@@ -516,6 +528,7 @@ def loan_user(user_id):
         'loan_user.html',
         user=user,
         loan_list=loan_list,
+        loaned=loaned
         )
 
 
@@ -534,7 +547,6 @@ def loan_book(book_id):
     
     if loaned == 'True':
         loan_list = [item for item in loan_list if item.return_date == None]
-        flash('Aktualnie wypożyczone książki', 'success')
 
     if request.method == 'POST':
         data = request.get_json(force=True)
@@ -559,6 +571,7 @@ def loan_book(book_id):
         'loan_book.html',
         book=book,
         loan_list=loan_list,
+        loaned=loaned
         )
 
 
@@ -577,16 +590,16 @@ def categories():
         existing_category = Category.query.filter_by(name=data['name']).first()
                     
         if existing_category:
+            answer = {'status': 'exist',}
 
-            return make_response({}, 409)
-        
         else:
             new_category = Category(name=data['name'])
             db.session.add(new_category)
             db.session.commit()    
+            answer = {'status': 'add',}
             flash(f'Dodano kategorię - {new_category}', 'success')
 
-            return make_response({}, 200)
+        return make_response(answer, 200)
 
     if request.method == 'DELETE':
         data = request.get_json(force=True)

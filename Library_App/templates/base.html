@@ -19,15 +19,18 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link {% if request.path != url_for('main.books') %} active {% endif %}" href="{{ url_for('main.books') }}">Książki</a>
+                        <a class="nav-link {% if request.path != url_for('main.books') %} active {% endif %}" 
+                            href="{{ url_for('main.books') }}">Książki</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if request.path != url_for('main.authors') %} active {% endif %}" href="{{ url_for('main.authors') }}">Autorzy</a>
+                        <a class="nav-link {% if request.path != url_for('main.authors') %} active {% endif %}" 
+                            href="{{ url_for('main.authors') }}">Autorzy</a>
                     </li>
                     {% if current_user.is_authenticated %}
                         {% if current_user.status.name == admin %}
                         <li class="nav-item">
-                            <a class="nav-link {% if request.path != url_for('main.users') %} active {% endif %}" href="{{ url_for('main.users') }}">Użytkownicy</a>
+                            <a class="nav-link {% if request.path != url_for('main.users') %} active {% endif %}" 
+                                href="{{ url_for('main.users') }}?status={{ client }}">Klienci</a>
                         </li>
                         <li class="nav-item dropdown">
                             <li class="nav-item dropdown">
@@ -45,18 +48,22 @@
                         </li>
                         {% else %}
                         <li class="nav-item">
-                            <a class="nav-link {% if request.path != url_for('auth.loan_user_logged') %} active {% endif %}" href="{{ url_for('auth.loan_user_logged') }}">Moje Wypożyczenia</a>
+                            <a class="nav-link {% if request.path != url_for('auth.user_loan') %} active {% endif %}" 
+                                href="{{ url_for('auth.user_loan') }}?loaned=False">Moje Wypożyczenia</a>
                         </li>
                         {% endif %}
                     {% endif %}
                 </ul>
                 <div class="col d-flex justify-content-end navbar-nav">
                     {% if current_user.is_authenticated %}
-                    <a class="nav-link {% if request.path != url_for('auth.profile') %} active {% endif %}" href="{{ url_for('auth.profile') }}">{{ current_user }}</a>
-                    <a class="nav-link active" href="{{ url_for('auth.logout') }}">Wyloguj</a>
+                    <a class="nav-link {% if request.path != url_for('auth.user') %} active {% endif %}" 
+                        href="{{ url_for('auth.user') }}">{{ current_user }}</a>
+                    <a class="nav-link active" href="{{ url_for('auth.user_logout') }}">Wyloguj</a>
                     {% else %}
-                    <a class="nav-link {% if request.path != url_for('auth.login') %} active {% endif %}" href="{{ url_for('auth.login') }}">Zaloguj</a>
-                    <a class="nav-link {% if request.path != url_for('auth.register') %} active {% endif %}" href="{{ url_for('auth.register') }}">Rejestracja</a>
+                    <a class="nav-link {% if request.path != url_for('auth.user_login') %} active {% endif %}" 
+                        href="{{ url_for('auth.user_login') }}">Zaloguj</a>
+                    <a class="nav-link {% if request.path != url_for('auth.user_register') %} active {% endif %}" 
+                        href="{{ url_for('auth.user_register') }}">Rejestracja</a>
                     {% endif %}
                 </div>
             </div>

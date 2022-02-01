@@ -8,22 +8,16 @@
                     <h4 class="color-header">Moje wypożyczenia</h4>
                 </div>
                 <div class="col-6 d-flex justify-content-end mb-2 my-header-col">
-                    {% if request.args.get('loaned') %}
-                    <a href="{{ url_for('auth.loan_user_logged') }}" class="btn btn-success my-button">Wszystkie</a>
+                    {% if loaned == 'True' %}
+                    <h5 class="color-header">Aktualne</h5>
+                    <a href="{{ url_for('auth.user_loan') }}?loaned=False" class="btn btn-success my-button">Wszystkie</a>
                     {% else %}
-                    <a href="{{ url_for('auth.loan_user_logged') }}?loaned=True" class="btn btn-success my-button">Aktualne</a>
+                    <h5 class="color-header">Wszystkie</h5>
+                    <a href="{{ url_for('auth.user_loan') }}?loaned=True" class="btn btn-success my-button">Aktualne</a>
                     {% endif %}
-                    <a href="{{ url_for('main.index') }}" class="btn btn-info my-button">Anuluj</a>
+                    <a href="{{ url_for('auth.user') }}" class="btn btn-info my-button">Profil</a>
                 </div>
             </div>
-            {% for category, message in get_flashed_messages(with_categories=true) %}
-            <div class="row">
-                <div class="col-12 alert alert-{{ category }} text-center my-alert-area">
-                    {{ message }}
-                    <button type="button" class="btn btn-{{ category }} my-button-close" data-dismiss="alert">X</button>
-                </div>
-            </div>
-            {% endfor %}
             <div class="row">
                 <table class="table">
                     <thead>

@@ -11,8 +11,8 @@ Dodaj autora
         <div class="mt-4 ml-4 mr-4">
             <form method="POST">
                 {{ form.csrf_token }}
-                {% if author %}
                 <div class="row border-bottom border-3 my-header-row">
+                    {% if author %}
                     <div class="col-6 mb-2 my-header-col">
                         <h4 class="color-header">Edytuj profil autora</h4>
                     </div>
@@ -20,9 +20,7 @@ Dodaj autora
                         {{ form.submit(class="btn btn-success my-button") }}
                         <a href="{{ url_for('main.author_profile', author_id=author.id) }}" class="btn btn-info my-button">Wstecz</a>
                     </div>
-                </div>
-                {% else %}
-                <div class="row border-bottom border-3 my-header-row">
+                    {% else %}
                     <div class="col-6 mb-2 my-header-col">
                         <h4 class="color-header">Dodaj profil nowego autora</h4>
                     </div>
@@ -30,16 +28,8 @@ Dodaj autora
                         {{ form.submit(class="btn btn-success my-button") }}
                         <a href="{{ url_for('main.index') }}" class="btn btn-info my-button">Anuluj</a>
                     </div>
+                    {% endif %}
                 </div>
-                {% endif %}
-                {% for category, message in get_flashed_messages(with_categories=true) %}
-                <div class="row">
-                    <div class="col-12 alert alert-{{ category }} text-center my-alert-area">
-                        {{ message }}
-                        <button type="button" class="btn btn-{{ category }} my-button-close" data-dismiss="alert">X</button>
-                    </div>
-                </div>
-                {% endfor %}
                 <div class="form-group row">
                     <div class="col-lg-2 col-md-1 col-sm-0"></div>
                     <div class="col-lg-8 col-md-10 col-sm-12 my-input-area">

@@ -11,9 +11,19 @@
                     <h5 class="color-header">{{ current_user.status.value }}</h5>
                     <a href="{{ url_for('auth.user_edit') }}" class="btn btn-success my-button">Edytuj</a>
                     <a href="{{ url_for('auth.user_password') }}" class="btn btn-success my-button">Hasło</a>
-                    <a href="{{ url_for('auth.user_remove') }}" class="btn btn-danger my-button">Usuń</a>
+                    <a href="{{ url_for('auth.user_delete') }}" class="btn btn-danger my-button">Usuń</a>
                 </div>
             </div>
+            {% for category, message in get_flashed_messages(with_categories=true) %}
+            {% if loop.last %}
+            <div class="row my-alert-area">
+                <div class="col-12 alert alert-{{ category }}" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn btn-{{ category }} my-button-close" data-dismiss="alert">X</button>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
             <div class="row">
                 <div class="col-9">
                     <div class="row my-row">
@@ -57,7 +67,7 @@
                     {% endif %}
                     <div class="row my-row">
                         <div class="col-12">
-                            <a href="{{ url_for('auth.loan_user_logged') }}" class="btn btn-info">Moje wypożyczenia</a>
+                            <a href="{{ url_for('auth.user_loan') }}?loaned=False" class="btn btn-info">Moje wypożyczenia</a>
                         </div>
                     </div>
                 </div>

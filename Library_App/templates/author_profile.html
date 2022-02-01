@@ -15,6 +15,16 @@
                     <a href="{{ url_for('main.authors') }}" class="btn btn-info my-button">Autorzy</a>
                 </div>
             </div>
+            {% for category, message in get_flashed_messages(with_categories=true) %}
+            {% if loop.last %}
+            <div class="row my-alert-area">
+                <div class="col-12 alert alert-{{ category }}" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn btn-{{ category }} my-button-close" data-dismiss="alert">X</button>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
             <div class="row">
                 <div class="col-9">                        
                     <div class="row my-row">
@@ -23,11 +33,17 @@
                     </div>
                     <div class="row my-row">
                         <div class="col-4 my-bold-text">Data urodzenia:</div>
-                        <div class="col-8">{% if author.date_of_birth %} {{ author.date_of_birth.strftime('%d.%m.%Y') }} {% else %} (brak danych) {% endif %}</div>
+                        <div class="col-8">{{ author.date_of_birth.strftime('%d.%m.%Y') }}</div>
                     </div>
                     <div class="row my-row">
                         <div class="col-4 my-bold-text">Data śmierci:</div>
-                        <div class="col-8">{% if author.date_of_death %} {{ author.date_of_death.strftime('%d.%m.%Y') }} {% else %} (brak danych) {% endif %}</div>
+                        <div class="col-8">
+                            {% if author.date_of_death %} 
+                            {{ author.date_of_death.strftime('%d.%m.%Y') }} 
+                            {% else %} 
+                            (brak danych) 
+                            {% endif %}
+                        </div>
                     </div>
                     <div class="row my-row">
                         <div class="col-4 my-bold-text">Książki:</div>
@@ -37,7 +53,8 @@
                                     {% for book in author.books %}
                                     <div class="col-6">
                                         <li class="my-list">
-                                            <a href="{{ url_for('main.book_profile', book_id=book.id) }}" class="my-link">"{{ book.title }}"</a>
+                                            <a href="{{ url_for('main.book_profile', book_id=book.id) }}" 
+                                                class="my-link">"{{ book.title }}"</a>
                                         </li>
                                     </div>
                                     {% endfor %}

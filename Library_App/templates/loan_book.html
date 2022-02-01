@@ -8,21 +8,27 @@
                     <h4 class="color-header">Historia wypożyczeń - "{{ book }}"</h4>
                 </div>
                 <div class="col-6 d-flex justify-content-end mb-2 my-header-col">
-                    {% if request.args.get('loaned') %}
-                    <a href="{{ url_for('main.loan_book', book_id=book.id) }}" class="btn btn-success my-button">Wszystkie</a>
+                    {% if loaned == 'True' %}
+                    <h5 class="color-header">Aktualne</h5>
+                    <a href="{{ url_for('main.loan_book', book_id=book.id) }}?loaned=False" 
+                        class="btn btn-success my-button">Wszystkie</a>
                     {% else %}
-                    <a href="{{ url_for('main.loan_book', book_id=book.id) }}?loaned=True" class="btn btn-success my-button">Aktualne</a>
+                    <h5 class="color-header">Wszystkie</h5>
+                    <a href="{{ url_for('main.loan_book', book_id=book.id) }}?loaned=True" 
+                        class="btn btn-success my-button">Aktualne</a>
                     {% endif %}
-                    <a href="{{ url_for('main.book_profile', book_id=book.id) }}" class="btn btn-info my-button">Powrót</a>
+                    <a href="{{ url_for('main.book_profile', book_id=book.id) }}" class="btn btn-info my-button">Wstecz</a>
                 </div>
             </div>
             {% for category, message in get_flashed_messages(with_categories=true) %}
-            <div class="row">
-                <div class="col-12 alert alert-{{ category }} text-center my-alert-area">
+            {% if loop.last %}
+            <div class="row my-alert-area">
+                <div class="col-12 alert alert-{{ category }}" role="alert">
                     {{ message }}
                     <button type="button" class="btn btn-{{ category }} my-button-close" data-dismiss="alert">X</button>
                 </div>
             </div>
+            {% endif %}
             {% endfor %}
             <div class="row">
                 <table class="table">
@@ -40,25 +46,34 @@
                         <tr class="d-flex flex-wrap my-table">
                             <td class="col-1">{{ loop.index }}</td>
                             <th class="col-lg-5 col-md-5 col-sm-3">
-                                <a href="{{ url_for('main.user_profile', user_id=loan.user.id) }}" class="my-link">{{ loan.user }}</a>
+                                <a href="{{ url_for('main.user_profile', user_id=loan.user.id) }}" 
+                                    class="my-link">{{ loan.user }}</a>
                             </th>
                             <td class="col-lg-2 col-md-2 col-sm-3 text-center">{{ loan.loan_date.strftime('%d.%m.%Y') }}</td>
                             <td class="col-lg-2 col-md-2 col-sm-3 text-center">
                                 {% if loan.return_date %} 
                                 {{ loan.return_date.strftime('%d.%m.%Y') }} 
                                 {% else %} 
-                                <button type="button" data-today="{{ today.strftime('%d.%m.%Y') }}" data-book="{{ loan.book }}" data-user="{{ loan.user }}" 
-                                    data-loan_date="{{ loan.loan_date.strftime('%d.%m.%Y') }}" data-id="{{ loan.id }}" data-toggle="modal" 
-                                    data-target="#exampleModal" class="btn btn-outline-success my-button-outline">Zgłoś zwrot</button>
+                                <button type="button" data-today="{{ today.strftime('%d.%m.%Y') }}" data-book="{{ loan.book }}" 
+                                    data-user="{{ loan.user }}" data-loan_date="{{ loan.loan_date.strftime('%d.%m.%Y') }}" 
+                                    data-id="{{ loan.id }}" data-toggle="modal" data-target="#exampleModal" 
+                                    class="btn btn-outline-success my-button-outline">
+                                    Zgłoś zwrot
+                                </button>
                                 {% endif %}
                             </td>
                             <td class="col-2 text-center">
                                 {% if loan.return_date %} 
-                                <button type="button" data-return_date="{{ loan.return_date.strftime('%d.%m.%Y') }}" data-book="{{ loan.book }}" data-user="{{ loan.user }}" 
-                                    data-loan_date="{{ loan.loan_date.strftime('%d.%m.%Y') }}" data-id="{{ loan.id }}" data-toggle="modal" 
-                                    data-target="#exampleModal" class="btn btn-outline-danger my-button-outline">&cross;</button>
+                                <button type="button" data-return_date="{{ loan.return_date.strftime('%d.%m.%Y') }}" 
+                                    data-book="{{ loan.book }}" data-user="{{ loan.user }}" data-id="{{ loan.id }}" 
+                                    data-loan_date="{{ loan.loan_date.strftime('%d.%m.%Y') }}" data-toggle="modal" 
+                                    data-target="#exampleModal" class="btn btn-outline-danger my-button-outline">
+                                    &cross;
+                                </button>
                                 {% else %}
-                                <button type="button" disabled="disabled" class="btn btn-outline-danger my-button-outline">&cross;</button>
+                                <button type="button" disabled="disabled" class="btn btn-outline-danger my-button-outline">
+                                    &cross;
+                                </button>
                                 {% endif %}
                             </td>
                         </tr>
@@ -77,7 +92,8 @@
                 </table>                     
             </div>
         </div>
-        <div class="modal" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" 
+            aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div id="modal-content" class="modal-content">
                     <form>
@@ -111,7 +127,7 @@
                             </ul>
                         </div>
                         <div class="modal-footer">
-                            <button type="submit" class="btn">Potwierdź</button>
+                            <button type="submit" class="btn">Zapisz</button>
                             <button type="reset" class="btn btn-info" data-dismiss="modal">Anuluj</button>
                         </div>
                     </form>

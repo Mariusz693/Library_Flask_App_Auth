@@ -5,29 +5,31 @@
         <div class="mt-4 ml-4 mr-4">
             <form method="GET">
                 <div class="row border-bottom border-3 my-header-row">
-                    {% if request.args.status == admin %}
                     <div class="col-6 mb-2 my-header-col">
-                        <h4 class="color-header">Wszyscy administratorzy</h4>
+                        <h4 class="color-header">{{ message }}</h4>
                     </div>
                     <div class="col-6 d-flex justify-content-end mb-2 my-header-col">
-                        <a href="{{ url_for('main.users') }}" class="btn btn-info my-button">Klienci</a>
-                    </div>
-                    {% else %}
-                    <div class="col-6 mb-2 my-header-col">
-                        {% if request.args.search %}
-                        <h4 class="color-header">Wyniki wyszukiwania: "{{ request.args.search }}"</h4>
+                        {% if request.args.status == admin %}
+                        <a href="{{ url_for('main.users') }}?status={{ client }}" class="btn btn-info my-button">Klienci</a>
                         {% else %}
-                        <h4 class="color-header">Wszyscy użytkownicy</h4>
-                        {% endif %}
-                    </div>
-                    <div class="col-6 d-flex justify-content-end mb-2 my-header-col">
-                        <input type="text" class="form-control my-search-input" name="search" {% if request.args.search %} value="{{ request.args.search }}" {% endif %} placeholder="Wyszukaj">
+                        <input type="text" class="form-control my-search-input" name="search" {% if request.args.search %} 
+                            value="{{ request.args.search }}" {% endif %} placeholder="Wyszukaj">
                         <button type="submit" class="btn btn-success my-button">Szukaj</button>
                         <a href="{{ url_for('main.users') }}?status={{ admin }}" class="btn btn-info my-button">Admini</a>
+                        {% endif %}
                     </div>
-                    {% endif %}
                 </div>
             </form>
+            {% for category, message in get_flashed_messages(with_categories=true) %}
+            {% if loop.last %}
+            <div class="row my-alert-area">
+                <div class="col-12 alert alert-{{ category }}" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn btn-{{ category }} my-button-close" data-dismiss="alert">X</button>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
             <table class="table">
                 <thead>
                     <tr class="d-flex flex-wrap">
@@ -45,7 +47,9 @@
                         <th class="col-lg-3 col-md-3 col-sm-2">{{ user.first_name }}</th>
                         <th class="col-lg-3 col-md-3 col-sm-3">{{ user.last_name }}</th>
                         <td class="col-lg-3 col-md-3 col-sm-3">
-                            <a href="{{ url_for('main.user_profile', user_id=user.id) }}" class="my-link">{{ user.email }}</a>
+                            <a href="{{ url_for('main.user_profile', user_id=user.id) }}" class="my-link">
+                                {{ user.email }}
+                            </a>
                         </td>
                         <td class="col-lg-2 col-md-2 col-sm-3 text-center">
                             {% if user.phone_number %} (+48) {{ user.phone_number }} {% else %} (brak danych) {% endif %}

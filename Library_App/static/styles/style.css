@@ -1,70 +1,3 @@
-/* 
-
-img.my-style {
-    margin-top: 25px;
-    margin-bottom: 100px;
-    margin-left: 20px;
-    margin-right: 10%;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-button.my-button-add {
-    background-color: darkgreen;
-    color: white;
-    width: 70px;
-    border: none;
-    border-radius: 5px;
-}
- 
-div.my-checkbox {
-    margin-bottom: 5px;
-}
-
-
-div.my-error {
-    color: darkred;
-}
-
-
-
-
-
-
-
-
-
-
-
- */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 body {
     background: #dbe3de;
     background: -webkit-linear-gradient(to left, #ffffff, #dbe3de);
@@ -132,16 +65,9 @@ li.my-list {
 }
 
 div.my-alert-area {
-    width: 90%;
-    margin-left: 5%;
-    margin-right: 5%;
-}
-
-
-div.my-alert-area-2 {
-    padding-left: 5%;
-    padding-right: 5%;
-    margin-bottom: 10px;
+    margin-left: 15px;
+    margin-right: 15px;
+    text-align: center;
 }
 
 div.my-input-area {
@@ -205,4 +131,8 @@ button.my-button-outline {
 
 button:focus {
     outline: none;
+}
+
+input.my-button-add-author {
+    margin-top: 38px;
 }

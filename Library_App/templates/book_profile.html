@@ -15,6 +15,16 @@
                     <a href="{{ url_for('main.books') }}" class="btn btn-info my-button">Książki</a>
                 </div>
             </div>
+            {% for category, message in get_flashed_messages(with_categories=true) %}
+            {% if loop.last %}
+            <div class="row my-alert-area">
+                <div class="col-12 alert alert-{{ category }}" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn btn-{{ category }} my-button-close" data-dismiss="alert">X</button>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
             <div class="row">
                 <div class="col-9">                        
                     <div class="row my-row">
@@ -28,7 +38,8 @@
                     <div class="row my-row">
                         <div class="col-4 my-bold-text">Autor:</div>
                         <div class="col-8">
-                            <a href="{{ url_for('main.author_profile', author_id=book.author.id) }}" class="my-link">{{ book.author }}</a>
+                            <a href="{{ url_for('main.author_profile', author_id=book.author.id) }}" 
+                                class="my-link">{{ book.author }}</a>
                         </div>
                     </div>
                     <div class="row my-row">
@@ -50,14 +61,15 @@
                     {% if current_user.is_authenticated and current_user.status.name == admin %}
                     <div class="row my-row">
                         <div class="col-12">
-                            <a href="{{ url_for('main.loan_book', book_id=book.id) }}" class="btn btn-info">Historia wypożyczeń</a>
+                            <a href="{{ url_for('main.loan_book', book_id=book.id) }}" 
+                                class="btn btn-info">Historia wypożyczeń</a>
                         </div>
                     </div>
                     {% endif %}
                 </div>
                 <div class="col-3">
                     <img class="rounded mx-auto d-block img-thumbnail" 
-                    src="{{ url_for('static', filename='images/book_profile.jpg') }}" alt="Book profile photo">
+                        src="{{ url_for('static', filename='images/book_profile.jpg') }}" alt="Book profile photo">
                 </div>
             </div>
         </div>                

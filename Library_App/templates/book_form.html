@@ -11,8 +11,8 @@ Dodaj książkę
         <div class="mt-4 ml-4 mr-4">
             <form method="POST">
                 {{ form.csrf_token }}
-                {% if book %}
                 <div class="row border-bottom border-3 my-header-row">
+                    {% if book %}
                     <div class="col-6 mb-2 my-header-col">
                         <h4 class="color-header">Edytuj profil książki</h4>
                     </div>
@@ -20,9 +20,7 @@ Dodaj książkę
                         {{ form.submit(class="btn btn-success my-button") }}
                         <a href="{{ url_for('main.book_profile', book_id=book.id) }}" class="btn btn-info my-button">Wstecz</a>
                     </div>
-                </div>
-                {% else %}
-                <div class="row border-bottom border-3 my-header-row">
+                    {% else %}
                     <div class="col-6 mb-2 my-header-col">
                         <h4 class="color-header">Dodaj profil nowej książki</h4>
                     </div>
@@ -30,16 +28,15 @@ Dodaj książkę
                         {{ form.submit(class="btn btn-success my-button") }}
                         <a href="{{ url_for('main.index') }}" class="btn btn-info my-button">Anuluj</a>
                     </div>
+                    {% endif %}
                 </div>
-                {% endif %}
-                {% for category, message in get_flashed_messages(with_categories=true) %}
-                <div class="row">
-                    <div class="col-12 alert alert-{{ category }} text-center my-alert-area">
-                        {{ message }}
-                        <button type="button" class="btn btn-{{ category }} my-button-close" data-dismiss="alert">X</button>
+                <div class="row my-alert-area my-display-none">
+                    <div class="col-12 alert alert-success" role="alert">
+                        Dodano wpis nowego autora: 
+                        <b></b>
+                        <button type="button" class="btn btn-success my-button-close" data-dismiss="alert">X</button>
                     </div>
                 </div>
-                {% endfor %}
                 <div class="form-group row">
                     <div class="col-8 my-input-area">
                         {{ form.title.label(class="label-size col-form-label my-bold-text") }}
@@ -65,20 +62,7 @@ Dodaj książkę
                     </div>
                 </div>
                 <div class="form-group row">
-                    <div class="col-12 my-input-area">
-                        {{ form.description.label(class="label-size col-form-label my-bold-text") }}
-                        {{ form.description(class="form-control", rows="5") }}
-                        {% if form.description.errors %}
-                        <ul>
-                            {% for error in form.description.errors %}
-                            <li class="my-error">{{ error }}</li>
-                            {% endfor %}
-                        </ul>
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <div class="col-8 my-input-area">
+                    <div class="col-lg-6 col-md-6 col-sm-5 my-input-area">
                         {{ form.author.label(class="label-size col-form-label my-bold-text") }}
                         {{ form.author(class="form-control") }}
                         {% if form.author.errors %}
@@ -89,39 +73,16 @@ Dodaj książkę
                         </ul>
                         {% endif %}
                     </div>
-                    <div class="col-4 d-flex my-input-area my-align-end">
-                        <button type="button" class="btn btn-success" id="my-button-author">Dodaj</button>
+                    <div class="col-lg-2 col-md-2 col-sm-3 my-input-area">
+                        <input class="form-control btn btn-success my-button-add-author" type="button" value="Nowy"
+                        data-toggle="modal" data-target="#exampleModal">
                     </div>
-                </div>
-                <div class="form-group row my-display-none my-align-end" id="author_add">
-                    <div class="col-6 my-input-area">
-                        {{ form.name.label(class="label-size col-form-label my-bold-text") }}
-                        {{ form.name(class="form-control") }}
-                        {% if form.name.errors %}
+                    <div class="col-4 my-input-area">
+                        {{ form.copies.label(class="label-size col-form-label my-bold-text") }}
+                        {{ form.copies(class="form-control") }}
+                        {% if form.copies.errors %}
                         <ul>
-                            {% for error in form.name.errors %}
-                            <li class="my-error">{{ error }}</li>
-                            {% endfor %}
-                        </ul>
-                        {% endif %}
-                    </div>
-                    <div class="col-3 my-input-area">
-                        {{ form.date_of_birth.label(class="label-size col-form-label my-bold-text") }}
-                        {{ form.date_of_birth(class="form-control") }}
-                        {% if form.date_of_birth.errors %}
-                        <ul>
-                            {% for error in form.date_of_birth.errors %}
-                            <li class="my-error">{{ error }}</li>
-                            {% endfor %}
-                        </ul>
-                        {% endif %}
-                    </div>
-                    <div class="col-3 my-input-area">
-                        {{ form.date_of_death.label(class="label-size col-form-label my-bold-text") }}
-                        {{ form.date_of_death(class="form-control") }}
-                        {% if form.date_of_death.errors %}
-                        <ul>
-                            {% for error in form.date_of_death.errors %}
+                            {% for error in form.copies.errors %}
                             <li class="my-error">{{ error }}</li>
                             {% endfor %}
                         </ul>
@@ -129,12 +90,12 @@ Dodaj książkę
                     </div>
                 </div>
                 <div class="form-group row">
-                    <div class="col-8 my-input-area">
-                        {{ form.copies.label(class="label-size col-form-label my-bold-text") }}
-                        {{ form.copies(class="form-control") }}
-                        {% if form.copies.errors %}
+                    <div class="col-12 my-input-area">
+                        {{ form.description.label(class="label-size col-form-label my-bold-text") }}
+                        {{ form.description(class="form-control", rows="5") }}
+                        {% if form.description.errors %}
                         <ul>
-                            {% for error in form.copies.errors %}
+                            {% for error in form.description.errors %}
                             <li class="my-error">{{ error }}</li>
                             {% endfor %}
                         </ul>
@@ -159,11 +120,45 @@ Dodaj książkę
                 <div class="col-lg-2 col-md-1 col-sm-0"></div>
                 <div class="col-lg-8 col-md-10 col-sm-12 my-img-area">   
                     <img class="rounded mx-auto d-block img-thumbnail" 
-                    src="{{ url_for('static', filename='images/book_form.jpg') }}" alt="Book form photo">
+                        src="{{ url_for('static', filename='images/book_form.jpg') }}" alt="Book form photo">
                 </div>
                 <div class="col-lg-2 col-md-1 col-sm-0"></div>
             </div>
         </div>
+        <div class="modal" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" 
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div id="modal-content" class="modal-content">
+                    <form class="my-form">
+                        <div class="modal-header">
+                            <h5 class="text-center">Dodaj wpis nowego autora</h5>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group row">
+                                <div class="col-12 my-modal-input">
+                                    {{ form_author.name.label(class="label-size col-form-label my-bold-text") }}
+                                    {{ form_author.name(class="form-control") }}
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-6 my-modal-input">
+                                    {{ form_author.date_of_birth.label(class="label-size col-form-label my-bold-text") }}
+                                    {{ form_author.date_of_birth(class="form-control") }}
+                                </div>
+                                <div class="col-6 my-modal-input">
+                                    {{ form_author.date_of_death.label(class="label-size col-form-label my-bold-text") }}
+                                    {{ form_author.date_of_death(class="form-control") }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-success">Dodaj</button>
+                            <button type="button" class="btn btn-info" data-dismiss="modal">Anuluj</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-    <script src="{{ url_for('static', filename='js/book_add.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/author_add.js') }}"></script>
 {% endblock content %}

@@ -90,7 +90,7 @@ class UserPasswordForm(FlaskForm):
             Length(min=8, message='Wpisz mocniejsze hasło.')
         ]
     )
-    repeat_new_password = PasswordField(
+    new_password_repeat = PasswordField(
         label='Powtórz nowe hasło: *',
         validators=[
             DataRequired(message='Pole obowiązkowe.'),
@@ -153,7 +153,7 @@ class BookForm(FlaskForm):
     )
     description = TextAreaField(label='Opis:', validators=[Optional()])
     copies = IntegerField(
-        label='Ilość egzemplarzy: *',
+        label='Egzemplarze: *',
         default=1,
         validators=[
             DataRequired(message='Pole obowiązkowe.'),
@@ -161,28 +161,12 @@ class BookForm(FlaskForm):
         ]
     )
     author = QuerySelectField(
-        label='Wybierz autora lub dodaj nowego: *',
+        label='Autor: *',
         query_factory=query_choices_authors,
         allow_blank=True,
         blank_text='Wybierz',
-    )
-    name = StringField(
-        'Imię i nazwisko (pseudonim): *',
-        validators=[Optional(), Length(min=3, message='Pole obowiązkowe.')]
-    )
-    date_of_birth = DateField(
-        label='Data urodzenia: *',
         validators=[
-            Optional(), 
-            DateRange(message='Data nie może być datą przyszłą.') 
-        ] 
-    )
-    date_of_death = DateField(
-        label='Data śmierci:',
-        validators=[
-            Optional(), 
-            EqualDateTo('date_of_birth', message='Data śmierci nie może być mniejsza niż urodzenia'), 
-            DateRange(message='Data nie może być datą przyszłą.') 
+            DataRequired(message='Pole obowiązkowe.'),
         ]
     )
     categories = QueryCheckboxField(
