@@ -20,13 +20,13 @@ def admin_type():
 
 @main.route('/')
 def index():
-
+    """Home Page View."""
     return render_template('index.html')
 
 
 @main.route('/wrong_access')
 def wrong_access():
-    
+    """Wrong Access View, For User Without Admin Status."""
     return render_template(
         'wrong_access.html',
         )
@@ -34,7 +34,7 @@ def wrong_access():
 
 @main.route('/books')
 def books():
-
+    """All Books View."""
     search = request.args.get('search')
     
     if search:
@@ -54,7 +54,7 @@ def books():
 
 @main.route('/authors')
 def authors():
-    
+    """All Authors View."""
     search = request.args.get('search')
     
     if search:
@@ -75,7 +75,7 @@ def authors():
 @main.route('/users')
 @login_required
 def users():
-    
+    """All Users View."""
     if current_user.status.name != UserType.Admin.name:
     
         return redirect(url_for('main.wrong_access'))
@@ -106,7 +106,7 @@ def users():
 @main.route('/user_profile/<int:user_id>')
 @login_required
 def user_profile(user_id):
-    
+    """User Profile View."""
     if current_user.status.name != UserType.Admin.name:
     
         return redirect(url_for('main.wrong_access'))
@@ -125,7 +125,7 @@ def user_profile(user_id):
 @main.route('/user_status/<int:user_id>', methods=['GET', 'POST'])
 @login_required
 def user_status(user_id):
-    
+    """Change User Status View."""
     if current_user.status.name != UserType.Admin.name:
     
         return redirect(url_for('main.wrong_access'))
@@ -142,7 +142,7 @@ def user_status(user_id):
         else:
             user.status = form.status.data
             db.session.commit()
-            flash(f'Zmieniono status profilu: {user.status.value}', 'success')
+            flash(f'Zmieniono status profilu - {user.status.value}', 'success')
 
             return redirect(url_for('main.user_profile', user_id=user.id))
     
@@ -159,7 +159,7 @@ def user_status(user_id):
 @main.route('/author_add', methods=['GET', 'POST'])
 @login_required
 def author_add():
-    
+    """Author Add View."""
     if current_user.status.name != UserType.Admin.name:
     
         return redirect(url_for('main.wrong_access'))
@@ -180,7 +180,7 @@ def author_add():
             )
             db.session.add(new_author)
             db.session.commit()
-            flash(f'Dodano profil autora: {new_author}', 'success')
+            flash(f'Dodano profil autora - {new_author}', 'success')
 
             return redirect(url_for('main.authors'))
     
@@ -193,7 +193,7 @@ def author_add():
 @main.route('/author_edit/<int:author_id>', methods=['GET', 'POST'])
 @login_required
 def author_edit(author_id):
-    
+    """Author Edit View."""
     if current_user.status.name != UserType.Admin.name:
     
         return redirect(url_for('main.wrong_access'))
@@ -225,7 +225,7 @@ def author_edit(author_id):
 
 @main.route('/author_profile/<int:author_id>')
 def author_profile(author_id):
-
+    """Author Profile View."""
     author = Author.query.get_or_404(author_id)
     
     return render_template(
@@ -237,7 +237,7 @@ def author_profile(author_id):
 @main.route('/author_delete/<int:author_id>', methods=['GET', 'POST'])
 @login_required
 def author_delete(author_id):
-
+    """Author Delete View."""
     if current_user.status.name != UserType.Admin.name:
     
         return redirect(url_for('main.wrong_access'))
@@ -250,9 +250,10 @@ def author_delete(author_id):
                 flash('Egzemplarze książek autora na wypożyczeniu', 'danger')
                 break
         else:
+            name = author.name
             db.session.delete(author)
             db.session.commit()
-            flash(f'Usunięto profil autora: {author}', 'success')
+            flash(f'Usunięto profil autora - {name}', 'success')
 
             return redirect(url_for('main.authors'))
             
@@ -268,7 +269,7 @@ def author_delete(author_id):
 @main.route('/book_add', methods=['GET', 'POST', 'PUT'])
 @login_required
 def book_add():
-    
+    """Book Add View."""
     if current_user.status.name != UserType.Admin.name:
     
         return redirect(url_for('main.wrong_access'))
@@ -292,7 +293,7 @@ def book_add():
             new_book.categories.extend(form.categories.data)
             db.session.add(new_book)
             db.session.commit()
-            flash(f'Dodano profil książki "{new_book}"', 'success')
+            flash(f'Dodano profil książki - "{new_book}"', 'success')
         
             return redirect(url_for('main.books'))
 
@@ -341,7 +342,7 @@ def book_add():
 @main.route('/book_edit/<int:book_id>', methods=['GET', 'POST', 'PUT'])
 @login_required
 def book_edit(book_id):
-    
+    """Book Edit View."""
     if current_user.status.name != UserType.Admin.name:
     
         return redirect(url_for('main.wrong_access'))
@@ -417,7 +418,7 @@ def book_edit(book_id):
 
 @main.route('/book_profile/<int:book_id>')
 def book_profile(book_id):
-
+    """Book Profile View."""
     book = Book.query.get_or_404(book_id)
     
     return render_template(
@@ -429,7 +430,7 @@ def book_profile(book_id):
 @main.route('/book_delete/<int:book_id>', methods=['GET', 'POST'])
 @login_required
 def book_delete(book_id):
-
+    """Book Delete View."""
     if current_user.status.name != UserType.Admin.name:
     
         return redirect(url_for('main.wrong_access'))
@@ -440,9 +441,10 @@ def book_delete(book_id):
         if book.borrowed_copies > 0:
             flash('Egzemplarze książki na wypożyczeniu', 'danger')
         else:
+            title = book.title
             db.session.delete(book)
             db.session.commit()
-            flash(f'Usunięto profil książki "{book}"', 'success')
+            flash(f'Usunięto profil książki - "{title}"', 'success')
     
             return redirect(url_for('main.books'))
             
@@ -458,7 +460,7 @@ def book_delete(book_id):
 @main.route('/loan_add', methods=['GET', 'POST'])
 @login_required
 def loan_add():
-    
+    """Loan Add View."""
     if current_user.status.name != UserType.Admin.name:
     
         return redirect(url_for('main.wrong_access'))
@@ -481,7 +483,7 @@ def loan_add():
             db.session.add(new_loan)
             book.borrowed_copies += 1
             db.session.commit()
-            flash(f'Dodano wypożyczenie książki "{book}" - {user}', 'success')
+            flash(f'Dodano wypożyczenie książki - "{book}" - {user}', 'success')
     
     return render_template(
         'loan_form.html',
@@ -492,7 +494,7 @@ def loan_add():
 @main.route('/loan_user/<int:user_id>', methods=['GET', 'POST', 'DELETE'])
 @login_required
 def loan_user(user_id):
-    
+    """Loan User View."""
     if current_user.status.name != UserType.Admin.name:
     
         return redirect(url_for('main.wrong_access'))
@@ -518,9 +520,10 @@ def loan_user(user_id):
     if request.method == 'DELETE':
         data = request.get_json(force=True)
         loan = Books_Users.query.get_or_404(data['loan'])
+        book = loan.book
         db.session.delete(loan)
         db.session.commit()
-        flash(f'Usunięto z historii wybraną pozycję - "{loan.book}"', 'success')
+        flash(f'Usunięto z historii wybraną pozycję - "{book}"', 'success')
 
         return make_response({}, 200)
     
@@ -535,7 +538,7 @@ def loan_user(user_id):
 @main.route('/loan_book/<int:book_id>', methods=['GET', 'POST', 'DELETE'])
 @login_required
 def loan_book(book_id):
-    
+    """Loan Book View."""
     if current_user.status.name != UserType.Admin.name:
     
         return redirect(url_for('main.wrong_access'))
@@ -561,9 +564,10 @@ def loan_book(book_id):
     if request.method == 'DELETE':
         data = request.get_json(force=True)
         loan = Books_Users.query.get_or_404(data['loan'])
+        user = loan.user
         db.session.delete(loan)
         db.session.commit()
-        flash(f'Usunięto z historii wybraną pozycję - {loan.user}', 'success')
+        flash(f'Usunięto z historii wybraną pozycję - {user}', 'success')
 
         return make_response({}, 200)
     
@@ -578,7 +582,7 @@ def loan_book(book_id):
 @main.route("/categories", methods=['GET', 'POST', 'DELETE'])
 @login_required
 def categories():
-    
+    """Categories of Book View, List, Add or Delete."""
     if current_user.status.name != UserType.Admin.name:
     
         return redirect(url_for('main.wrong_access'))
@@ -604,9 +608,10 @@ def categories():
     if request.method == 'DELETE':
         data = request.get_json(force=True)
         category = Category.query.get_or_404(data['category'])
+        name = category.name
         db.session.delete(category)
         db.session.commit()
-        flash(f'Usunięto kategorię - {category}', 'success')
+        flash(f'Usunięto kategorię - {name}', 'success')
 
         return make_response({}, 200)
 

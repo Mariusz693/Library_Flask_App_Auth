@@ -20,7 +20,7 @@ def admin_type():
 
 @auth.route('/user_login', methods=['GET', 'POST'])
 def user_login():
-
+    """User Login View."""
     if current_user.is_authenticated:
         
         return redirect(url_for('main.index'))
@@ -53,7 +53,7 @@ def user_login():
 
 @auth.route('/user_logout')
 def user_logout():
-
+    """User Logout View."""
     logout_user()
 
     return redirect(url_for('main.index'))
@@ -61,7 +61,7 @@ def user_logout():
 
 @auth.route('/user_register', methods=['GET', 'POST'])
 def user_register():
-    
+    """User Register View."""
     form = UserRegisterForm()
 
     if form.validate_on_submit():
@@ -93,7 +93,7 @@ def user_register():
 @auth.route('/user')
 @login_required
 def user():
-    
+    """User Profile View."""
     actuall_loan = Books_Users.query.filter_by(user=current_user, return_date=None).order_by(
         Books_Users.loan_date.asc()).all()
     
@@ -106,7 +106,7 @@ def user():
 @auth.route('/user_edit', methods=['GET', 'POST'])
 @login_required
 def user_edit():
-    
+    """User Edit Profile View."""
     form = UserEditForm(obj=current_user)
 
     if form.validate_on_submit():
@@ -133,7 +133,7 @@ def user_edit():
 @auth.route('/user_password', methods=['GET', 'POST'])
 @login_required
 def user_password():
-    
+    """User Change Password View."""
     form = UserPasswordForm()
 
     if form.validate_on_submit():
@@ -156,7 +156,7 @@ def user_password():
 @auth.route('/user_delete', methods=['GET', 'POST'])
 @login_required
 def user_delete():
-
+    """User Delete View."""
     if request.method == 'POST':
         if current_user.status.name == 'Admin' and User.query.filter_by(status=UserType.Admin.name).count() < 2:    
             flash('Jestes jedynym administratorem, nie możesz usunąć profilu', 'danger')
@@ -184,7 +184,7 @@ def user_delete():
 @auth.route('/user_loan')
 @login_required
 def user_loan():
-    
+    """User Loan View."""
     loaned = request.args.get('loaned')
     loan_list = Books_Users.query.filter_by(user=current_user).order_by(
         Books_Users.return_date.desc(), Books_Users.loan_date.desc()).all()

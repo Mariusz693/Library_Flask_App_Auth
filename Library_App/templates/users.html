@@ -20,16 +20,6 @@
                     </div>
                 </div>
             </form>
-            {% for category, message in get_flashed_messages(with_categories=true) %}
-            {% if loop.last %}
-            <div class="row my-alert-area">
-                <div class="col-12 alert alert-{{ category }}" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn btn-{{ category }} my-button-close" data-dismiss="alert">X</button>
-                </div>
-            </div>
-            {% endif %}
-            {% endfor %}
             <table class="table">
                 <thead>
                     <tr class="d-flex flex-wrap">
