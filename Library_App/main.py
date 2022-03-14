@@ -136,7 +136,7 @@ def user_status(user_id):
     
     if form.validate_on_submit():    
         if user.status.name == UserType.Admin.name and \
-            User.query.filter_by(status=UserType.Admin.name).count() < 2 and form.status.data == UserType.User.name:
+            User.query.filter_by(status=UserType.Admin.name).count() < 2 and form.status.data == UserType.Client.name:
             flash('Jestes jedynym administratorem, udziel komuś uprawnień administratora', 'danger')
         
         else:

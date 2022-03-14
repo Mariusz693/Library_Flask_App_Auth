@@ -158,7 +158,7 @@ def user_password():
 def user_delete():
     """User Delete View."""
     if request.method == 'POST':
-        if current_user.status.name == 'Admin' and User.query.filter_by(status=UserType.Admin.name).count() < 2:    
+        if current_user.status.name == UserType.Admin.name and User.query.filter_by(status=UserType.Admin.name).count() < 2:    
             flash('Jestes jedynym administratorem, nie możesz usunąć profilu', 'danger')
         
         else:
